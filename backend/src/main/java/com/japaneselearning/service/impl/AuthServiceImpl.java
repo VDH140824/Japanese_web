@@ -6,8 +6,8 @@ import main.java.com.japaneselearning.dto.request.LoginRequest;
 import main.java.com.japaneselearning.dto.request.RefreshTokenRequest;
 import main.java.com.japaneselearning.dto.request.RegisterRequest;
 import main.java.com.japaneselearning.dto.request.ResetPasswordRequest;
+import main.java.com.japaneselearning.dto.request.UpdateProfileRequest;
 import main.java.com.japaneselearning.dto.response.UserResponse;
-import main.java.com.japaneselearning.mapper.UserMapper;
 import main.java.com.japaneselearning.repository.EmailVerificationRepository;
 import main.java.com.japaneselearning.repository.PasswordResetRepository;
 import main.java.com.japaneselearning.repository.RefreshTokenRepository;
@@ -72,23 +72,23 @@ public class AuthServiceImpl implements AuthService {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    @Override
     public void logout(String refreshToken) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    @Override
     public void verifyEmail(String token) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    @Override
     public UserResponse getCurrentUser(Long userId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public UserResponse updateProfile(Long userId, Object profileRequest) {
+    @Override
+    public UserResponse updateProfile(Long userId, UpdateProfileRequest request) {
         throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    private UserResponse toResponse(Object user) {
-        return null;
     }
 }
