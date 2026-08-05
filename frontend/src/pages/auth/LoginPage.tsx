@@ -6,7 +6,9 @@ import {
   AuthButton,
   AuthDivider,
   AuthShell,
+  EmailIcon,
   GoogleButton,
+  LockIcon,
   TextField,
 } from "../../components/ui/auth";
 
@@ -32,26 +34,22 @@ export function LoginPage() {
   });
 
   const onSubmit = () => {};
-
   const handleGoogleSignIn = () => {};
 
   return (
     <AuthShell
-      title="Welcome back"
+      title="Welcome back 👋"
       description="Sign in to continue your Japanese learning journey."
       footer={
-        <p className="text-center text-sm text-slate-400">
+        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(148,163,184,0.85)" }}>
           Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="font-semibold text-violet-400 hover:text-violet-300"
-          >
+          <Link to="/register" className="auth-link">
             Create one
           </Link>
         </p>
       }
     >
-      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleSubmit(onSubmit)} noValidate>
         <GoogleButton type="button" onClick={handleGoogleSignIn}>
           Continue with Google
         </GoogleButton>
@@ -59,10 +57,11 @@ export function LoginPage() {
         <AuthDivider />
 
         <TextField
-          label="Email"
+          label="Email address"
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
+          icon={<EmailIcon />}
           {...register("email")}
           error={errors.email?.message}
         />
@@ -72,32 +71,29 @@ export function LoginPage() {
           type="password"
           placeholder="Enter your password"
           autoComplete="current-password"
+          icon={<LockIcon />}
           {...register("password")}
           error={errors.password?.message}
         />
 
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <label className="flex items-center gap-2 text-slate-300">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 7, color: "#94a3b8", cursor: "pointer" }}>
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-violet-600 focus:ring-violet-500"
+              style={{ accentColor: "#0ea5e9", width: 15, height: 15, cursor: "pointer" }}
               {...register("rememberMe")}
             />
             Remember me
           </label>
-
-          <Link
-            to="/forgot-password"
-            className="font-medium text-violet-400 hover:text-violet-300"
-          >
+          <Link to="/forgot-password" className="auth-link" style={{ fontSize: 13 }}>
             Forgot password?
           </Link>
         </div>
 
-        <AuthButton type="submit">Sign in</AuthButton>
+        <AuthButton type="submit">Sign in →</AuthButton>
 
-        <p className="text-center text-xs leading-5 text-slate-500">
-          This is UI only. Authentication flow will be connected later.
+        <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)", marginTop: 4 }}>
+          🔒 This is UI only. Authentication flow will be connected later.
         </p>
       </form>
     </AuthShell>

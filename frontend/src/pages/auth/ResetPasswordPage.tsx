@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthButton, AuthShell, TextField } from "../../components/ui/auth";
+import { AuthButton, AuthShell, LockIcon, TextField } from "../../components/ui/auth";
 
 const resetPasswordSchema = z
   .object({
@@ -36,25 +36,40 @@ export function ResetPasswordPage() {
 
   return (
     <AuthShell
-      title="Reset password"
-      description="Create a new password for your account."
+      title="Reset password 🛡️"
+      description="Create a strong new password for your account."
       footer={
-        <p className="text-center text-sm text-slate-400">
-          <Link
-            to="/login"
-            className="font-semibold text-violet-400 hover:text-violet-300"
-          >
-            Back to sign in
+        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(148,163,184,0.85)" }}>
+          <Link to="/login" className="auth-link">
+            ← Back to sign in
           </Link>
         </p>
       }
     >
-      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleSubmit(onSubmit)} noValidate>
+        {/* Strength tip */}
+        <div style={{
+          padding: "14px 16px",
+          borderRadius: 14,
+          background: "rgba(14,165,233,0.08)",
+          border: "1px solid rgba(56,189,248,0.2)",
+          fontSize: 13,
+          color: "#7dd3fc",
+          lineHeight: 1.6,
+          display: "flex",
+          gap: 10,
+          alignItems: "flex-start",
+        }}>
+          <span style={{ fontSize: 18 }}>🔐</span>
+          <span>Use 8+ characters with a mix of letters, numbers and symbols for a strong password.</span>
+        </div>
+
         <TextField
           label="New password"
           type="password"
           placeholder="Create a new password"
           autoComplete="new-password"
+          icon={<LockIcon />}
           {...register("password")}
           error={errors.password?.message}
         />
@@ -64,14 +79,15 @@ export function ResetPasswordPage() {
           type="password"
           placeholder="Repeat your new password"
           autoComplete="new-password"
+          icon={<LockIcon />}
           {...register("confirmPassword")}
           error={errors.confirmPassword?.message}
         />
 
-        <AuthButton type="submit">Update password</AuthButton>
+        <AuthButton type="submit">Update password →</AuthButton>
 
-        <p className="text-center text-xs leading-5 text-slate-500">
-          This is UI only and does not yet submit to any backend service.
+        <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>
+          🔒 This is UI only and does not yet submit to any backend service.
         </p>
       </form>
     </AuthShell>

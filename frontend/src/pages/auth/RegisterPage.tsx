@@ -4,9 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AuthButton,
-  AuthDivider,
   AuthShell,
+  EmailIcon,
+  LockIcon,
   TextField,
+  UserIcon,
 } from "../../components/ui/auth";
 
 const registerSchema = z
@@ -45,35 +47,34 @@ export function RegisterPage() {
 
   return (
     <AuthShell
-      title="Create your account"
-      description="Start your Japanese learning journey with a simple, responsive registration screen."
+      title="Create your account ✨"
+      description="Start your Japanese learning journey today — it's free!"
       footer={
-        <p className="text-center text-sm text-slate-400">
+        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(148,163,184,0.85)" }}>
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-violet-400 hover:text-violet-300"
-          >
+          <Link to="/login" className="auth-link">
             Sign in
           </Link>
         </p>
       }
     >
-      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form style={{ display: "flex", flexDirection: "column", gap: 16 }} onSubmit={handleSubmit(onSubmit)} noValidate>
         <TextField
           label="Full name"
           type="text"
           placeholder="Your name"
           autoComplete="name"
+          icon={<UserIcon />}
           {...register("name")}
           error={errors.name?.message}
         />
 
         <TextField
-          label="Email"
+          label="Email address"
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
+          icon={<EmailIcon />}
           {...register("email")}
           error={errors.email?.message}
         />
@@ -81,8 +82,9 @@ export function RegisterPage() {
         <TextField
           label="Password"
           type="password"
-          placeholder="Create a password"
+          placeholder="Create a strong password"
           autoComplete="new-password"
+          icon={<LockIcon />}
           {...register("password")}
           error={errors.password?.message}
         />
@@ -92,16 +94,15 @@ export function RegisterPage() {
           type="password"
           placeholder="Repeat your password"
           autoComplete="new-password"
+          icon={<LockIcon />}
           {...register("confirmPassword")}
           error={errors.confirmPassword?.message}
         />
 
-        <AuthButton type="submit">Create account</AuthButton>
+        <AuthButton type="submit">Create account →</AuthButton>
 
-        <AuthDivider />
-
-        <p className="text-center text-xs leading-5 text-slate-500">
-          This screen is UI-only and ready for backend wiring later.
+        <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>
+          🔒 This screen is UI-only and ready for backend wiring later.
         </p>
       </form>
     </AuthShell>
