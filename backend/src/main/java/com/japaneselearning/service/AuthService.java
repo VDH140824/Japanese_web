@@ -1,13 +1,13 @@
-package main.java.com.japaneselearning.service;
+package com.japaneselearning.service;
 
-import main.java.com.japaneselearning.dto.request.ChangePasswordRequest;
-import main.java.com.japaneselearning.dto.request.ForgotPasswordRequest;
-import main.java.com.japaneselearning.dto.request.LoginRequest;
-import main.java.com.japaneselearning.dto.request.RefreshTokenRequest;
-import main.java.com.japaneselearning.dto.request.RegisterRequest;
-import main.java.com.japaneselearning.dto.request.ResetPasswordRequest;
-import main.java.com.japaneselearning.dto.request.UpdateProfileRequest;
-import main.java.com.japaneselearning.dto.response.UserResponse;
+import com.japaneselearning.dto.request.ChangePasswordRequest;
+import com.japaneselearning.dto.request.ForgotPasswordRequest;
+import com.japaneselearning.dto.request.LoginRequest;
+import com.japaneselearning.dto.request.RefreshTokenRequest;
+import com.japaneselearning.dto.request.RegisterRequest;
+import com.japaneselearning.dto.request.ResetPasswordRequest;
+import com.japaneselearning.dto.request.UpdateProfileRequest;
+import com.japaneselearning.dto.response.UserResponse;
 
 public interface AuthService {
 
@@ -31,3 +31,4 @@ public interface AuthService {
 
     UserResponse updateProfile(Long userId, UpdateProfileRequest request);
 }
+

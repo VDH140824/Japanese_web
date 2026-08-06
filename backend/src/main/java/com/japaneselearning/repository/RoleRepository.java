@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.repository;
+package com.japaneselearning.repository;
 
 import com.japaneselearning.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

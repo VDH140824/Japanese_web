@@ -1,8 +1,8 @@
-package main.java.com.japaneselearning.mapper;
+package com.japaneselearning.mapper;
 
-import main.java.com.japaneselearning.dto.request.RegisterRequest;
-import main.java.com.japaneselearning.dto.response.UserResponse;
-import main.java.com.japaneselearning.entity.User;
+import com.japaneselearning.dto.request.RegisterRequest;
+import com.japaneselearning.dto.response.UserResponse;
+import com.japaneselearning.entity.User;
 
 public final class UserMapper {
 

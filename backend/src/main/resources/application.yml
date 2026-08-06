@@ -5,12 +5,12 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/japanese_learning?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh&characterEncoding=utf8
     username: root
-    password:123456
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
@@ -20,13 +20,14 @@ spring:
   security:
     oauth2:
       client:
-          registration:
-            google:
-              client-id: ${GOOGLE_CLIENT_ID:your-google-client-id-here}
-              client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret-here}
-              scope:
-                - email
-                - profile
+        registration:
+          google:
+            client-id: 165606726136-heuroqd4d8gfes6u7s9l2vr4oome5ov0.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "http://localhost:8080/api/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
 
 server:
   port: 8080
@@ -35,5 +36,5 @@ server:
 
 logging:
   level:
-    org.springframework.security: INFO
+    org.springframework.security: DEBUG
     org.hibernate.SQL: INFO

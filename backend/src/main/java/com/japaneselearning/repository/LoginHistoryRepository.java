@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.repository;
+package com.japaneselearning.repository;
 
 import com.japaneselearning.entity.LoginHistory;
 import org.springframework.data.jpa.repository.JpaRepository;

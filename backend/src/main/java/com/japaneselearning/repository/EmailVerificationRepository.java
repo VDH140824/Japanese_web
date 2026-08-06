@@ -1,6 +1,6 @@
-package main.java.com.japaneselearning.repository;
+package com.japaneselearning.repository;
 
-import main.java.com.japaneselearning.entity.EmailVerification;
+import com.japaneselearning.entity.EmailVerification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

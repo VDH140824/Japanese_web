@@ -1,7 +1,7 @@
-package main.java.com.japaneselearning.mapper;
+package com.japaneselearning.mapper;
 
-import main.java.com.japaneselearning.dto.request.RefreshTokenRequest;
-import main.java.com.japaneselearning.entity.RefreshToken;
+import com.japaneselearning.dto.request.RefreshTokenRequest;
+import com.japaneselearning.entity.RefreshToken;
 
 public final class RefreshTokenMapper {
 

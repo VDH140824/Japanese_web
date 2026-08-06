@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.dto.request;
+package com.japaneselearning.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.entity;
+package com.japaneselearning.entity;
 
 public enum Gender {
     MALE,

@@ -1,10 +1,10 @@
-package main.java.com.japaneselearning.controller;
+package com.japaneselearning.controller;
 
 import jakarta.validation.Valid;
-import main.java.com.japaneselearning.dto.request.ChangePasswordRequest;
-import main.java.com.japaneselearning.dto.request.UpdateProfileRequest;
-import main.java.com.japaneselearning.dto.response.UserResponse;
-import main.java.com.japaneselearning.service.AuthService;
+import com.japaneselearning.dto.request.ChangePasswordRequest;
+import com.japaneselearning.dto.request.UpdateProfileRequest;
+import com.japaneselearning.dto.response.UserResponse;
+import com.japaneselearning.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;

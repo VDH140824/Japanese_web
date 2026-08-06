@@ -1,9 +1,13 @@
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\config\SecurityConfig.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\controller\AuthController.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\controller\UserController.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\ChangePasswordRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\ForgotPasswordRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\LoginRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\RefreshTokenRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\RegisterRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\ResetPasswordRequest.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\UpdateProfileRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\response\UserResponse.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\EmailVerification.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\Gender.java
@@ -16,6 +20,8 @@ D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearni
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\UserProfile.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\UserStatus.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\JapaneseLearningBackendApplication.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\mapper\RefreshTokenMapper.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\mapper\UserMapper.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\repository\EmailVerificationRepository.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\repository\LoginHistoryRepository.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\repository\PasswordResetRepository.java
@@ -23,3 +29,10 @@ D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearni
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\repository\RoleRepository.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\repository\UserProfileRepository.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\repository\UserRepository.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\CustomUserDetailsService.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\JwtAuthenticationFilter.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\JwtService.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\OAuth2SuccessHandler.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\RestAuthenticationEntryPoint.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\service\AuthService.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\service\impl\AuthServiceImpl.java

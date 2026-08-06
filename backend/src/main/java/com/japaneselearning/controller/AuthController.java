@@ -1,13 +1,13 @@
-package main.java.com.japaneselearning.controller;
+package com.japaneselearning.controller;
 
 import jakarta.validation.Valid;
-import main.java.com.japaneselearning.dto.request.ForgotPasswordRequest;
-import main.java.com.japaneselearning.dto.request.LoginRequest;
-import main.java.com.japaneselearning.dto.request.RefreshTokenRequest;
-import main.java.com.japaneselearning.dto.request.RegisterRequest;
-import main.java.com.japaneselearning.dto.request.ResetPasswordRequest;
-import main.java.com.japaneselearning.dto.response.UserResponse;
-import main.java.com.japaneselearning.service.AuthService;
+import com.japaneselearning.dto.request.ForgotPasswordRequest;
+import com.japaneselearning.dto.request.LoginRequest;
+import com.japaneselearning.dto.request.RefreshTokenRequest;
+import com.japaneselearning.dto.request.RegisterRequest;
+import com.japaneselearning.dto.request.ResetPasswordRequest;
+import com.japaneselearning.dto.response.UserResponse;
+import com.japaneselearning.service.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;

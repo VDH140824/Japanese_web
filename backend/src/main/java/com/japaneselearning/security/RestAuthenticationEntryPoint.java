@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.security;
+package com.japaneselearning.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

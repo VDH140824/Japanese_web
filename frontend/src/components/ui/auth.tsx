@@ -74,23 +74,24 @@ function EyeIcon({ open }: { open: boolean }) {
 function Particles() {
   const items = [
     { char: "日", x: "8%",  y: "18%", size: "text-3xl", delay: "0s",   dur: "8s" },
-    { char: "本",  x: "88%", y: "12%", size: "text-2xl", delay: "1.5s", dur: "10s" },
+    { char: "本",  x: "48%", y: "12%", size: "text-2xl", delay: "1.5s", dur: "10s" },
     { char: "語",  x: "15%", y: "72%", size: "text-4xl", delay: "2.5s", dur: "9s"  },
-    { char: "学",  x: "78%", y: "65%", size: "text-2xl", delay: "0.8s", dur: "11s" },
-    { char: "習",  x: "50%", y: "8%",  size: "text-xl",  delay: "3.2s", dur: "7s"  },
-    { char: "文",  x: "92%", y: "45%", size: "text-3xl", delay: "1.9s", dur: "12s" },
+    { char: "学",  x: "52%", y: "65%", size: "text-2xl", delay: "0.8s", dur: "11s" },
+    { char: "習",  x: "30%", y: "8%",  size: "text-xl",  delay: "3.2s", dur: "7s"  },
+    { char: "文",  x: "58%", y: "45%", size: "text-3xl", delay: "1.9s", dur: "12s" },
     { char: "字",  x: "3%",  y: "45%", size: "text-2xl", delay: "4s",   dur: "8.5s"},
-    { char: "話",  x: "60%", y: "88%", size: "text-3xl", delay: "2s",   dur: "9.5s"},
+    { char: "話",  x: "40%", y: "88%", size: "text-3xl", delay: "2s",   dur: "9.5s"},
   ];
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 2 }}>
       {items.map(({ char, x, y, size, delay, dur }, i) => (
         <span
           key={i}
           className={`absolute ${size} font-bold select-none`}
           style={{
             left: x, top: y,
-            color: "rgba(125,211,252,0.18)",
+            color: "rgba(255,255,255,0.22)",
+            textShadow: "0 0 12px rgba(56,189,248,0.5)",
             animationName: "floatKanji",
             animationDuration: dur,
             animationDelay: delay,
@@ -109,159 +110,185 @@ function Particles() {
 /* ─── AuthShell ─────────────────────────────────────────────────── */
 export function AuthShell({ title, description, children, footer }: AuthShellProps) {
   return (
-    <div className="auth-shell-root">
+    <div className="auth-fullscreen-root">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        .auth-shell-root {
+        .auth-fullscreen-root {
           font-family: 'Inter', sans-serif;
           position: relative;
-          min-height: 100vh;
+          width: 100vw;
+          height: 100vh;
           overflow: hidden;
-          background: linear-gradient(135deg, #020d1a 0%, #041628 30%, #061e38 60%, #031320 100%);
+          background: #020d1a;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem 1rem;
+          justify-content: flex-end;
         }
 
-        /* Animated background gradient blobs */
-        .auth-blob-1 {
+        /* Video background across the full page (left 2/3 focus) */
+        .auth-bg-video {
           position: absolute;
-          width: 600px; height: 600px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(14,165,233,0.22) 0%, transparent 65%);
-          top: -180px; left: -120px;
-          animation: blobPulse 8s ease-in-out infinite;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: 0;
         }
-        .auth-blob-2 {
+
+        /* Subtle dark gradient overlay so left area is cinematic and text pop */
+        .auth-bg-overlay {
           position: absolute;
-          width: 500px; height: 500px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(56,189,248,0.16) 0%, transparent 65%);
-          bottom: -150px; right: -100px;
-          animation: blobPulse 10s ease-in-out infinite reverse;
+          inset: 0;
+          background: linear-gradient(
+            to right,
+            rgba(2, 13, 26, 0.35) 0%,
+            rgba(2, 13, 26, 0.15) 60%,
+            rgba(2, 13, 26, 0.4) 100%
+          );
+          z-index: 1;
         }
-        .auth-blob-3 {
-          position: absolute;
-          width: 380px; height: 380px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 65%);
-          top: 40%; left: 50%;
-          transform: translateX(-50%);
-          animation: blobPulse 12s ease-in-out infinite 2s;
+
+        /* Left 2/3 Hero Section */
+        .auth-hero-left {
+          position: relative;
+          z-index: 3;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 3rem 4rem;
+          pointer-events: none;
         }
-        /* Grid overlay */
-        .auth-grid {
-          position: absolute; inset: 0;
-          background-image:
-            linear-gradient(rgba(14,165,233,0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.06) 1px, transparent 1px);
-          background-size: 60px 60px;
+
+        .auth-hero-header {
+          pointer-events: auto;
         }
-        /* Kanji float animation */
+
+        .auth-brand-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 18px;
+          border-radius: 999px;
+          background: rgba(4, 22, 40, 0.65);
+          border: 1px solid rgba(56, 189, 248, 0.35);
+          backdrop-filter: blur(16px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+          margin-bottom: 1.25rem;
+        }
+
+        .auth-hero-title {
+          font-size: 42px;
+          font-weight: 800;
+          color: white;
+          margin: 0;
+          letter-spacing: -0.8px;
+          text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+          line-height: 1.15;
+        }
+
+        .auth-icons-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 1rem;
+        }
+
+        .auth-icon-badge {
+          width: 44px;
+          height: 44px;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(12px);
+          display: grid;
+          place-items: center;
+          font-size: 20px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          transition: transform 0.2s;
+        }
+        .auth-icon-badge:hover {
+          transform: translateY(-3px) scale(1.05);
+        }
+
+        .auth-hero-footer-tag {
+          pointer-events: auto;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 20px;
+          border-radius: 999px;
+          background: rgba(4, 22, 40, 0.75);
+          border: 1px solid rgba(56, 189, 248, 0.3);
+          backdrop-filter: blur(16px);
+          color: #bae6fd;
+          font-size: 13px;
+          font-weight: 600;
+          width: fit-content;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Right 1/3 Sidebar Login Panel anchored to the far right with ultra-transparent glass & hover illumination */
+        .auth-form-right {
+          position: relative;
+          z-index: 4;
+          width: 460px;
+          max-width: 90vw;
+          height: 100vh;
+          background: rgba(2, 8, 18, 0.10);
+          backdrop-filter: blur(4px);
+          border-left: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: -6px 0 24px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 3rem 2.75rem;
+          overflow-y: auto;
+          transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .auth-form-right:hover {
+          background: rgba(2, 12, 28, 0.38);
+          backdrop-filter: blur(12px);
+          border-left-color: rgba(56, 189, 248, 0.35);
+          box-shadow: -10px 0 40px rgba(14, 165, 233, 0.12);
+        }
+
+        @media (max-width: 900px) {
+          .auth-fullscreen-root {
+            flex-direction: column;
+            overflow-y: auto;
+          }
+          .auth-hero-left {
+            padding: 2rem 1.5rem;
+            min-height: auto;
+          }
+          .auth-form-right {
+            width: 100%;
+            max-width: 100vw;
+            height: auto;
+            min-height: 100vh;
+            border-left: none;
+            border-top: 1px solid rgba(56, 189, 248, 0.25);
+          }
+        }
+
+        /* Animations */
         @keyframes floatKanji {
           0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
           33%       { transform: translateY(-20px) rotate(3deg); opacity: 1; }
           66%       { transform: translateY(10px) rotate(-3deg); opacity: 0.7; }
         }
-        @keyframes blobPulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50%       { transform: scale(1.15); opacity: 0.8; }
-        }
         @keyframes shimmer {
           0%   { background-position: -200% center; }
           100% { background-position: 200% center; }
         }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(32px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
         }
         @keyframes glowPulse {
           0%, 100% { box-shadow: 0 0 20px rgba(14,165,233,0.3), 0 0 40px rgba(14,165,233,0.1); }
           50%       { box-shadow: 0 0 35px rgba(14,165,233,0.5), 0 0 70px rgba(14,165,233,0.2); }
-        }
-
-        /* Card */
-        .auth-card {
-          position: relative;
-          width: 100%;
-          max-width: 960px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          border-radius: 28px;
-          overflow: hidden;
-          border: 1px solid rgba(56,189,248,0.18);
-          box-shadow:
-            0 0 0 1px rgba(255,255,255,0.04),
-            0 32px 80px rgba(0,0,0,0.55),
-            0 0 80px rgba(14,165,233,0.1);
-          animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-          backdrop-filter: blur(24px);
-        }
-        @media (max-width: 768px) {
-          .auth-card { grid-template-columns: 1fr; }
-          .auth-panel-left { display: none !important; }
-        }
-
-        /* Left decorative panel */
-        .auth-panel-left {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 2.5rem;
-          background: linear-gradient(160deg,
-            rgba(7,89,133,0.98) 0%,
-            rgba(14,116,144,0.97) 40%,
-            rgba(6,182,212,0.95) 100%
-          );
-          position: relative;
-          overflow: hidden;
-        }
-        .auth-panel-left::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .auth-panel-left::after {
-          content: '';
-          position: absolute;
-          bottom: -60px; right: -60px;
-          width: 240px; height: 240px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.08);
-        }
-
-        /* Right form panel */
-        .auth-panel-right {
-          position: relative;
-          padding: 2.5rem;
-          background: rgba(5,20,40,0.85);
-          backdrop-filter: blur(24px);
-        }
-        .auth-panel-right::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: radial-gradient(circle at top center, rgba(14,165,233,0.08), transparent 55%);
-          pointer-events: none;
-        }
-
-        /* Logo badge */
-        .auth-logo-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(255,255,255,0.15);
-          border: 1px solid rgba(255,255,255,0.25);
-          border-radius: 999px;
-          padding: 6px 14px;
-          backdrop-filter: blur(8px);
-          margin-bottom: 1.5rem;
-        }
-        .auth-logo-badge .wave {
-          font-size: 18px;
-          animation: floatKanji 3s ease-in-out infinite;
-          display: inline-block;
         }
 
         /* Secure badge */
@@ -271,14 +298,21 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           gap: 7px;
           padding: 5px 14px 5px 5px;
           border-radius: 999px;
-          background: rgba(14,165,233,0.12);
-          border: 1px solid rgba(56,189,248,0.25);
+          background: rgba(14,165,233,0.18);
+          border: 1px solid rgba(56,189,248,0.35);
           font-size: 11px;
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
           color: #7dd3fc;
           margin-bottom: 1rem;
+          backdrop-filter: blur(8px);
+          transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+        .auth-secure-badge:hover {
+          background: rgba(14,165,233,0.35);
+          border-color: #38bdf8;
+          box-shadow: 0 0 15px rgba(56,189,248,0.4);
         }
         .auth-secure-dot {
           width: 8px; height: 8px;
@@ -295,13 +329,14 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           color: #f0f9ff;
           letter-spacing: -0.5px;
           margin: 0 0 6px;
-          background: linear-gradient(135deg, #f0f9ff 30%, #7dd3fc 100%);
+          background: linear-gradient(135deg, #ffffff 30%, #7dd3fc 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        /* Input field */
+        /* Input field with high translucency & hover color pop */
         .auth-input-wrap {
           position: relative;
         }
@@ -316,19 +351,26 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           box-sizing: border-box;
           padding: 13px 14px 13px 42px;
           border-radius: 14px;
-          border: 1.5px solid rgba(56,189,248,0.2);
-          background: rgba(255,255,255,0.04);
-          color: #e0f2fe;
+          border: 1.5px solid rgba(255,255,255,0.22);
+          background: rgba(4, 22, 40, 0.25);
+          color: #ffffff;
           font-size: 15px;
           font-family: inherit;
           outline: none;
+          backdrop-filter: blur(8px);
+          text-shadow: 0 1px 4px rgba(0,0,0,0.6);
           transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
         }
-        .auth-input::placeholder { color: rgba(148,163,184,0.6); }
+        .auth-input::placeholder { color: rgba(224,242,254,0.65); }
+        .auth-input:hover {
+          border-color: rgba(56,189,248,0.55);
+          background: rgba(14,165,233,0.18);
+          box-shadow: 0 0 16px rgba(14,165,233,0.25);
+        }
         .auth-input:focus {
           border-color: #38bdf8;
-          background: rgba(56,189,248,0.07);
-          box-shadow: 0 0 0 3px rgba(56,189,248,0.18), 0 0 20px rgba(14,165,233,0.12);
+          background: rgba(14,165,233,0.28);
+          box-shadow: 0 0 0 3px rgba(56,189,248,0.35), 0 0 24px rgba(14,165,233,0.4);
         }
         .auth-input.error {
           border-color: #f87171;
@@ -341,7 +383,7 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           right: 14px; top: 50%;
           transform: translateY(-50%);
           background: none; border: none; cursor: pointer;
-          color: rgba(148,163,184,0.7);
+          color: rgba(224,242,254,0.75);
           padding: 2px;
           transition: color 0.2s;
         }
@@ -352,9 +394,10 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           display: block;
           font-size: 13px;
           font-weight: 600;
-          color: #bae6fd;
+          color: #e0f2fe;
           margin-bottom: 7px;
           letter-spacing: 0.01em;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         /* Submit button */
@@ -362,7 +405,7 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           width: 100%;
           padding: 14px;
           border-radius: 14px;
-          border: none;
+          border: 1px solid rgba(255,255,255,0.25);
           cursor: pointer;
           font-size: 15px;
           font-weight: 700;
@@ -372,7 +415,7 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
           background-size: 200%;
           box-shadow: 0 8px 24px rgba(14,165,233,0.4), 0 2px 6px rgba(14,165,233,0.2);
-          transition: transform 0.2s, box-shadow 0.2s, background-position 0.4s;
+          transition: transform 0.2s, box-shadow 0.25s, background-position 0.4s, border-color 0.25s;
           animation: glowPulse 3s ease-in-out infinite;
           position: relative;
           overflow: hidden;
@@ -382,13 +425,14 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           position: absolute;
           top: -50%; left: -60%;
           width: 40%; height: 200%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
           transform: skewX(-20deg);
           animation: shimmer 3s linear infinite 1s;
         }
         .auth-submit-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 14px 36px rgba(14,165,233,0.5), 0 4px 10px rgba(14,165,233,0.3);
+          border-color: #7dd3fc;
+          box-shadow: 0 0 30px rgba(14,165,233,0.6), 0 0 50px rgba(56,189,248,0.35);
           background-position: right;
         }
         .auth-submit-btn:active { transform: translateY(0); }
@@ -397,14 +441,14 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           transform: none; animation: none;
         }
 
-        /* Google button */
+        /* Google button with hover highlight */
         .auth-google-btn {
           width: 100%;
           padding: 13px 14px;
           border-radius: 14px;
-          border: 1.5px solid rgba(56,189,248,0.2);
-          background: rgba(255,255,255,0.05);
-          color: #e0f2fe;
+          border: 1.5px solid rgba(255,255,255,0.22);
+          background: rgba(255,255,255,0.08);
+          color: #f0f9ff;
           font-size: 14px;
           font-weight: 600;
           font-family: inherit;
@@ -413,13 +457,15 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           align-items: center;
           justify-content: center;
           gap: 10px;
+          backdrop-filter: blur(8px);
+          text-shadow: 0 1px 4px rgba(0,0,0,0.5);
           transition: border-color 0.25s, background 0.25s, transform 0.2s, box-shadow 0.25s;
         }
         .auth-google-btn:hover {
-          border-color: rgba(56,189,248,0.45);
-          background: rgba(56,189,248,0.1);
+          border-color: #38bdf8;
+          background: rgba(14,165,233,0.25);
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(14,165,233,0.15);
+          box-shadow: 0 0 24px rgba(14,165,233,0.35);
         }
         .auth-google-btn:disabled { cursor: not-allowed; opacity: 0.55; }
 
@@ -444,40 +490,6 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           background: rgba(255,255,255,0.03);
         }
 
-        /* Testimonial card on left */
-        .auth-testimonial {
-          border-radius: 18px;
-          border: 1px solid rgba(255,255,255,0.2);
-          background: rgba(255,255,255,0.1);
-          padding: 18px 20px;
-          backdrop-filter: blur(8px);
-          position: relative; z-index: 1;
-        }
-
-        /* Feature chips */
-        .auth-features {
-          display: flex; flex-direction: column; gap: 12px;
-          position: relative; z-index: 1;
-        }
-        .auth-feature-chip {
-          display: flex; align-items: center; gap: 12px;
-          padding: 12px 16px;
-          border-radius: 14px;
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.15);
-          backdrop-filter: blur(6px);
-          transition: background 0.2s;
-        }
-        .auth-feature-chip:hover { background: rgba(255,255,255,0.15); }
-        .auth-feature-icon {
-          width: 36px; height: 36px;
-          border-radius: 10px;
-          background: rgba(255,255,255,0.18);
-          display: grid; place-items: center;
-          font-size: 18px;
-          flex-shrink: 0;
-        }
-
         /* Link colors */
         .auth-link {
           color: #38bdf8;
@@ -486,112 +498,85 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           transition: color 0.2s;
         }
         .auth-link:hover { color: #7dd3fc; }
-
-        /* Stats row */
-        .auth-stats {
-          display: grid; grid-template-columns: repeat(3,1fr);
-          gap: 8px; margin-top: 1.5rem;
-          position: relative; z-index: 1;
-        }
-        .auth-stat {
-          text-align: center;
-          padding: 10px 8px;
-          border-radius: 12px;
-          background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.12);
-        }
       `}</style>
 
-      {/* Background effects */}
-      <div className="auth-blob-1" />
-      <div className="auth-blob-2" />
-      <div className="auth-blob-3" />
-      <div className="auth-grid" />
+      {/* Full-screen video background - 100% clean and unobstructed */}
+      <video
+        className="auth-bg-video"
+        src="https://res.cloudinary.com/keticbsk/video/upload/v1785993263/M%C3%80N_H%C3%8CNH_CH%E1%BB%8CN_T%C6%AF%E1%BB%9ANG_-_%C4%90I%C3%8AU_THUY%E1%BB%80N_NH%E1%BA%ACT_NGUY%E1%BB%86T_TH%C3%81NH_LINH_-_Garena_Li%C3%AAn_Qu%C3%A2n_Mobile_1_ac7jpy.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      <div className="auth-bg-overlay" />
       <Particles />
 
-      {/* Main card */}
-      <div className="auth-card">
-        {/* Left panel */}
-        <div className="auth-panel-left">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div className="auth-logo-badge">
-              <span className="wave">🌊</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: "white", letterSpacing: "0.05em" }}>
-                日本語 Learning
+      {/* 1/3 Right Sidebar Login Panel (Contains Title, Icons, & Form) */}
+      <div className="auth-form-right">
+        <div style={{ width: "100%", maxWidth: 380, margin: "0 auto" }}>
+          {/* Combined Brand Header & Japanese Icons */}
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div className="auth-brand-badge" style={{ marginBottom: "0.75rem" }}>
+              <span style={{ fontSize: 16 }}>🌸</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "white", letterSpacing: "0.06em" }}>
+                Nihongo Master
               </span>
             </div>
-            <h1 style={{ fontSize: 36, fontWeight: 800, color: "white", lineHeight: 1.2, margin: "0 0 14px", letterSpacing: "-0.5px" }}>
-              Learn Japanese <br />
-              <span style={{ color: "#bae6fd" }}>the beautiful way</span>
+
+            <h1 style={{ fontSize: 30, fontWeight: 800, color: "white", margin: "0 0 10px", letterSpacing: "-0.5px", lineHeight: 1.2 }}>
+              Learning Japanese
             </h1>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.82)", lineHeight: 1.7, maxWidth: 290 }}>
-              Practice vocabulary, kanji, grammar, and quizzes with a focused modern study flow.
-            </p>
-          </div>
 
-          <div className="auth-features">
-            {[
-              { icon: "📖", label: "Vocabulary", desc: "Build word by word" },
-              { icon: "🀄", label: "Kanji",      desc: "Master 2000+ characters" },
-              { icon: "🎴", label: "Flashcards", desc: "Spaced repetition system" },
-            ].map(({ icon, label, desc }) => (
-              <div key={label} className="auth-feature-chip">
-                <div className="auth-feature-icon">{icon}</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "white" }}>{label}</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>{desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <div className="auth-stats">
+            {/* Japanese Icons Row */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
               {[
-                { val: "50K+", lbl: "Learners" },
-                { val: "2000", lbl: "Kanji" },
-                { val: "4.9★", lbl: "Rating" },
-              ].map(({ val, lbl }) => (
-                <div key={lbl} className="auth-stat">
-                  <div style={{ fontSize: 16, fontWeight: 800, color: "white" }}>{val}</div>
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>{lbl}</div>
+                { icon: "🌸", title: "Sakura" },
+                { icon: "⛩️", title: "Torii" },
+                { icon: "🌊", title: "Great Wave" },
+                { icon: "🀄", title: "Kanji" },
+                { icon: "📖", title: "Vocabulary" },
+                { icon: "🎌", title: "Japan" },
+              ].map(({ icon, title: iconTitle }) => (
+                <div
+                  key={iconTitle}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: "rgba(255, 255, 255, 0.12)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    backdropFilter: "blur(8px)",
+                    display: "grid",
+                    placeItems: "center",
+                    fontSize: 17,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                  }}
+                  title={iconTitle}
+                >
+                  {icon}
                 </div>
               ))}
             </div>
-            <div className="auth-testimonial" style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.92)", lineHeight: 1.6, fontStyle: "italic" }}>
-                "This app made my JLPT N3 prep so much easier — beautiful and effective!"
-              </div>
-              <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "grid", placeItems: "center", fontSize: 14 }}>😊</span>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "white" }}>Nguyen Thi Lan</div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.65)" }}>JLPT N3 Learner</div>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
 
-        {/* Right form panel */}
-        <div className="auth-panel-right">
-          <div style={{ position: "relative", maxWidth: 380, margin: "0 auto" }}>
-            {/* Secure badge */}
-            <div className="auth-secure-badge">
-              <span className="auth-secure-dot" />
-              Secure access
-            </div>
+          <div style={{ height: 1, background: "linear-gradient(90deg, rgba(56,189,248,0.3), transparent)", marginBottom: "1.5rem" }} />
 
-            {/* Title */}
-            <h2 className="auth-form-title">{title}</h2>
-            <p style={{ fontSize: 13, color: "rgba(148,163,184,0.9)", marginBottom: "1.75rem", lineHeight: 1.6 }}>
-              {description}
-            </p>
-
-            {children}
-
-            {footer ? <div style={{ marginTop: "1.5rem" }}>{footer}</div> : null}
+          {/* Secure badge */}
+          <div className="auth-secure-badge">
+            <span className="auth-secure-dot" />
+            Secure access
           </div>
+
+          {/* Form Page Title (Sign in / Register / Forgot Password) */}
+          <h2 className="auth-form-title">{title}</h2>
+          <p style={{ fontSize: 13, color: "rgba(148,163,184,0.9)", marginBottom: "1.5rem", lineHeight: 1.6 }}>
+            {description}
+          </p>
+
+          {children}
+
+          {footer ? <div style={{ marginTop: "1.5rem" }}>{footer}</div> : null}
         </div>
       </div>
     </div>

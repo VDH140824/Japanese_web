@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.dto.response;
+package com.japaneselearning.dto.response;
 
 import java.time.LocalDateTime;
 

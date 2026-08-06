@@ -1,4 +1,4 @@
-package main.java.com.japaneselearning.security;
+package com.japaneselearning.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

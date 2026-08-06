@@ -1,7 +1,7 @@
-package main.java.com.japaneselearning.security;
+package com.japaneselearning.security;
 
-import main.java.com.japaneselearning.entity.User;
-import main.java.com.japaneselearning.repository.UserRepository;
+import com.japaneselearning.entity.User;
+import com.japaneselearning.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
