@@ -55,7 +55,7 @@ export function HomePage() {
             </li>
             <li>
               <button type="button" className="nav-item-btn">
-                <span>⛩️</span> Hán tự Kanji
+                <span>⛩️</span> Kanji
               </button>
             </li>
             <li>
@@ -71,6 +71,11 @@ export function HomePage() {
             <li>
               <button type="button" className="nav-item-btn">
                 <span>🎯</span> Luyện thi JLPT
+              </button>
+            </li>
+            <li>
+              <button type="button" className="nav-item-btn">
+                <span>🎯</span> Video giải trí
               </button>
             </li>
           </ul>
