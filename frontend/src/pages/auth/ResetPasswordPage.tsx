@@ -1,10 +1,9 @@
-import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthButton, AuthShell, LockIcon, TextField } from "../../components/ui/auth";
-import { apiClient } from "../../services/api";
+import { useResetPassword } from "../../hooks/useAuth";
 
 const resetPasswordSchema = z
   .object({
@@ -22,13 +21,20 @@ const resetPasswordSchema = z
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 export function ResetPasswordPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token") || "demo-token";
+  const token = searchParams.get("token") ?? "";
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const { mutate: resetPassword, isPending, isSuccess, error } = useResetPassword();
+
+  const successMessage = isSuccess
+    ? "Password reset successful! Redirecting to login..."
+    : null;
+
+  const serverError = error
+    ? ((error as any).response?.data?.message ??
+      (error as Error).message ??
+      "Failed to reset password. The link may have expired.")
+    : null;
 
   const {
     register,
@@ -42,25 +48,12 @@ export function ResetPasswordPage() {
     },
   });
 
-  const onSubmit = async (values: ResetPasswordFormValues) => {
-    setIsLoading(true);
-    setServerError(null);
-
-    try {
-      await apiClient.post("/auth/reset-password", {
-        token,
-        newPassword: values.password,
-        confirmPassword: values.confirmPassword,
-      });
-
-      setSuccessMessage("Password reset successful! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1500);
-    } catch (err: any) {
-      setSuccessMessage("Password updated successfully! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1500);
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values: ResetPasswordFormValues) => {
+    resetPassword({
+      token,
+      newPassword: values.password,
+      confirmPassword: values.confirmPassword,
+    });
   };
 
   return (
@@ -75,7 +68,11 @@ export function ResetPasswordPage() {
         </p>
       }
     >
-      <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 18 }}
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         {successMessage && (
           <div
             style={{
@@ -145,8 +142,8 @@ export function ResetPasswordPage() {
           error={errors.confirmPassword?.message}
         />
 
-        <AuthButton type="submit" disabled={isLoading}>
-          {isLoading ? "Updating..." : "Update password →"}
+        <AuthButton type="submit" disabled={isPending}>
+          {isPending ? "Updating..." : "Update password →"}
         </AuthButton>
 
         <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>

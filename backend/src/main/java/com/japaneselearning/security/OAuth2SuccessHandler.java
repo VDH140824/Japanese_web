@@ -57,28 +57,30 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return userRepository.save(existingUser);
         }).orElseGet(() -> {
             Role userRole = roleRepository.findByRoleName("USER")
-                    .orElseGet(() -> roleRepository.save(Role.builder()
-                            .roleName("USER")
-                            .description("Default user role")
-                            .build()));
+                    .orElseGet(() -> {
+                        Role role = new Role();
+                        role.setRoleName("USER");
+                        role.setDescription("Default user role");
+                        return roleRepository.save(role);
+                    });
 
             String username = email;
             if (userRepository.existsByUsername(username)) {
                 username = email.split("@")[0] + "_" + UUID.randomUUID().toString().substring(0, 5);
             }
 
-            User newUser = User.builder()
-                    .role(userRole)
-                    .username(username)
-                    .email(email)
-                    .passwordHash("{OAUTH2}" + UUID.randomUUID())
-                    .avatarUrl(picture)
-                    .status(UserStatus.ACTIVE)
-                    .emailVerified(true)
-                    .lastLogin(LocalDateTime.now())
-                    .build();
+            User newUser = new User();
+            newUser.setRole(userRole);
+            newUser.setUsername(username);
+            newUser.setEmail(email);
+            newUser.setPasswordHash("{OAUTH2}" + UUID.randomUUID());
+            newUser.setAvatarUrl(picture);
+            newUser.setStatus(UserStatus.ACTIVE);
+            newUser.setEmailVerified(true);
+            newUser.setLastLogin(LocalDateTime.now());
 
             return userRepository.save(newUser);
+
         });
 
         String token = jwtService.generateToken(user.getUsername());

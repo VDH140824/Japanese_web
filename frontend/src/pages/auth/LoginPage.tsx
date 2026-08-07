@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +11,7 @@ import {
   LockIcon,
   TextField,
 } from "../../components/ui/auth";
-import { apiClient } from "../../services/api";
+import { useLogin } from "../../hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Enter a valid email"),
@@ -26,9 +25,11 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const { mutate: login, isPending, error } = useLogin();
+
+  const serverError = error
+    ? ((error as any).response?.data?.message ?? (error as Error).message ?? "Login failed. Please try again.")
+    : null;
 
   const {
     register,
@@ -39,31 +40,11 @@ export function LoginPage() {
     defaultValues: { email: "", password: "", rememberMe: false },
   });
 
-  const onSubmit = async (values: LoginFormValues) => {
-    setIsLoading(true);
-    setServerError(null);
-
-    try {
-      const response = await apiClient.post("/auth/login", {
-        email: values.email,
-        password: values.password,
-      });
-
-      // Save token if available or demo token
-      const token = response.data?.token || "active-user-token";
-      localStorage.setItem("accessToken", token);
-      navigate("/home");
-    } catch (err: any) {
-      // If backend error or pending DB setup, fallback to demo login for smooth experience
-      localStorage.setItem("accessToken", "user-token");
-      navigate("/home");
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values: LoginFormValues) => {
+    login({ email: values.email, password: values.password });
   };
 
   const handleGoogleSignIn = () => {
-    // Redirect to Spring Boot OAuth2 authorization endpoint
     const backendUrl =
       import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
     window.location.href = `${backendUrl}/oauth2/authorization/google`;
@@ -82,7 +63,8 @@ export function LoginPage() {
         </p>
       }
     >
-      <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form style={{ display: "flex", flexDirection: "column", gap: 12 }} onSubmit={handleSubmit(onSubmit)} noValidate>
+
         {serverError && (
           <div
             style={{
@@ -138,8 +120,8 @@ export function LoginPage() {
           </Link>
         </div>
 
-        <AuthButton type="submit" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign in →"}
+        <AuthButton type="submit" disabled={isPending}>
+          {isPending ? "Signing in..." : "Sign in →"}
         </AuthButton>
 
         <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)", marginTop: 4 }}>
@@ -149,3 +131,4 @@ export function LoginPage() {
     </AuthShell>
   );
 }
+

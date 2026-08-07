@@ -37,4 +37,20 @@ public class Role {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
+
+    public String getRoleName() { return roleName; }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
+

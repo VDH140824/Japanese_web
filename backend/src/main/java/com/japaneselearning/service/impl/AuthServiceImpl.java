@@ -74,23 +74,27 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Role userRole = roleRepository.findByRoleName("USER")
-                .orElseGet(() -> roleRepository.save(Role.builder()
-                        .roleName("USER")
-                        .description("Default user role")
-                        .build()));
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setRoleName("USER");
+                    role.setDescription("Default user role");
+                    return roleRepository.save(role);
+                });
 
-        User newUser = User.builder()
-                .username(username)
-                .email(request.getEmail())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role(userRole)
-                .status(UserStatus.ACTIVE)
-                .emailVerified(true)
-                .lastLogin(LocalDateTime.now())
-                .build();
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setEmail(request.getEmail());
+        newUser.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        newUser.setRole(userRole);
+        newUser.setStatus(UserStatus.ACTIVE);
+        newUser.setEmailVerified(true);
+        newUser.setLastLogin(LocalDateTime.now());
+
 
         User savedUser = userRepository.save(newUser);
-        return mapToUserResponse(savedUser);
+        UserResponse response = mapToUserResponse(savedUser);
+        response.setAccessToken(jwtService.generateToken(savedUser.getUsername()));
+        return response;
     }
 
     @Override
@@ -106,8 +110,11 @@ public class AuthServiceImpl implements AuthService {
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
 
-        return mapToUserResponse(user);
+        UserResponse response = mapToUserResponse(user);
+        response.setAccessToken(jwtService.generateToken(user.getUsername()));
+        return response;
     }
+
 
     @Override
     public UserResponse refreshToken(RefreshTokenRequest request) {

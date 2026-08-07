@@ -242,7 +242,7 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 3rem 2.75rem;
+          padding: 1.5rem 2.25rem;
           overflow-y: auto;
           transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
         }
@@ -252,6 +252,7 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           border-left-color: rgba(56, 189, 248, 0.35);
           box-shadow: -10px 0 40px rgba(14, 165, 233, 0.12);
         }
+
 
         @media (max-width: 900px) {
           .auth-fullscreen-root {
@@ -512,74 +513,129 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
       <div className="auth-bg-overlay" />
       <Particles />
 
-      {/* 1/3 Right Sidebar Login Panel (Contains Title, Icons, & Form) */}
+      {/* 1/3 Right Sidebar Login Panel (Contains Title & Form) */}
       <div className="auth-form-right">
         <div style={{ width: "100%", maxWidth: 380, margin: "0 auto" }}>
-          {/* Combined Brand Header & Japanese Icons */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <div className="auth-brand-badge" style={{ marginBottom: "0.75rem" }}>
+          {/* Brand Header */}
+          <div style={{ marginBottom: "0.85rem" }}>
+            <div
+              className="auth-brand-badge"
+              style={{
+                marginBottom: "0.5rem",
+                background: "linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(56, 189, 248, 0.25) 100%)",
+                border: "1px solid rgba(244, 114, 182, 0.45)",
+                boxShadow: "0 4px 20px rgba(236, 72, 153, 0.25)",
+              }}
+            >
               <span style={{ fontSize: 16 }}>🌸</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: "white", letterSpacing: "0.06em" }}>
-                Nihongo Master
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  background: "linear-gradient(135deg, #ffffff 0%, #f472b6 60%, #38bdf8 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Nihongo Master • 日本語
               </span>
             </div>
 
-            <h1 style={{ fontSize: 30, fontWeight: 800, color: "white", margin: "0 0 10px", letterSpacing: "-0.5px", lineHeight: 1.2 }}>
+            <h1
+              style={{
+                fontSize: 27,
+                fontWeight: 800,
+                margin: "0 0 6px",
+                letterSpacing: "-0.6px",
+                lineHeight: 1.2,
+                background: "linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #f472b6 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                filter: "drop-shadow(0 2px 8px rgba(14, 165, 233, 0.3))",
+              }}
+            >
               Learning Japanese
             </h1>
 
-            {/* Japanese Icons Row */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
+            {/* Quick feature micro-badges */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
               {[
-                { icon: "🌸", title: "Sakura" },
-                { icon: "⛩️", title: "Torii" },
-                { icon: "🌊", title: "Great Wave" },
-                { icon: "🀄", title: "Kanji" },
-                { icon: "📖", title: "Vocabulary" },
-                { icon: "🎌", title: "Japan" },
-              ].map(({ icon, title: iconTitle }) => (
-                <div
-                  key={iconTitle}
+                { label: "⚡ JLPT N5-N1", color: "#38bdf8", bg: "rgba(56,189,248,0.15)", border: "rgba(56,189,248,0.3)" },
+                { label: "🎌 Kanji & Vocab", color: "#f472b6", bg: "rgba(244,114,182,0.15)", border: "rgba(244,114,182,0.3)" },
+                { label: "🎧 AI Audio", color: "#fbbf24", bg: "rgba(251,191,36,0.15)", border: "rgba(251,191,36,0.3)" },
+              ].map(({ label, color, bg, border }) => (
+                <span
+                  key={label}
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    background: "rgba(255, 255, 255, 0.12)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(8px)",
-                    display: "grid",
-                    placeItems: "center",
-                    fontSize: 17,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color,
+                    background: bg,
+                    border: `1px solid ${border}`,
+                    borderRadius: 999,
+                    padding: "2px 8px",
+                    letterSpacing: "0.03em",
+                    backdropFilter: "blur(6px)",
                   }}
-                  title={iconTitle}
                 >
-                  {icon}
-                </div>
+                  {label}
+                </span>
               ))}
             </div>
           </div>
 
-          <div style={{ height: 1, background: "linear-gradient(90deg, rgba(56,189,248,0.3), transparent)", marginBottom: "1.5rem" }} />
+          <div
+            style={{
+              height: 2,
+              borderRadius: 2,
+              background: "linear-gradient(90deg, #f472b6 0%, #38bdf8 50%, transparent 100%)",
+              marginBottom: "0.75rem",
+              boxShadow: "0 0 10px rgba(56, 189, 248, 0.5)",
+            }}
+          />
 
           {/* Secure badge */}
-          <div className="auth-secure-badge">
+          <div
+            className="auth-secure-badge"
+            style={{
+              marginBottom: "0.4rem",
+              background: "linear-gradient(90deg, rgba(52, 211, 153, 0.15), rgba(56, 189, 248, 0.15))",
+              border: "1px solid rgba(52, 211, 153, 0.4)",
+              color: "#6ee7b7",
+            }}
+          >
             <span className="auth-secure-dot" />
             Secure access
           </div>
 
           {/* Form Page Title (Sign in / Register / Forgot Password) */}
-          <h2 className="auth-form-title">{title}</h2>
-          <p style={{ fontSize: 13, color: "rgba(148,163,184,0.9)", marginBottom: "1.5rem", lineHeight: 1.6 }}>
+          <h2
+            className="auth-form-title"
+            style={{
+              fontSize: 23,
+              fontWeight: 800,
+              background: "linear-gradient(135deg, #ffffff 30%, #7dd3fc 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            {title}
+          </h2>
+          <p style={{ fontSize: 12, color: "rgba(186, 230, 253, 0.85)", marginBottom: "0.75rem", lineHeight: 1.4 }}>
             {description}
           </p>
 
           {children}
 
-          {footer ? <div style={{ marginTop: "1.5rem" }}>{footer}</div> : null}
+          {footer ? <div style={{ marginTop: "0.75rem" }}>{footer}</div> : null}
+
         </div>
       </div>
     </div>
+
+
   );
 }
 

@@ -1,10 +1,9 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthButton, AuthShell, EmailIcon, TextField } from "../../components/ui/auth";
-import { apiClient } from "../../services/api";
+import { useForgotPassword } from "../../hooks/useAuth";
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, "Email is required").email("Enter a valid email"),
@@ -13,10 +12,17 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 export function ForgotPasswordPage() {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const { mutate: sendReset, isPending, isSuccess, error } = useForgotPassword();
+
+  const successMessage = isSuccess
+    ? "Password reset request sent! Please check your email."
+    : null;
+
+  const serverError = error
+    ? ((error as any).response?.data?.message ??
+      (error as Error).message ??
+      "Failed to send reset email. Please try again.")
+    : null;
 
   const {
     register,
@@ -27,22 +33,8 @@ export function ForgotPasswordPage() {
     defaultValues: { email: "" },
   });
 
-  const onSubmit = async (values: ForgotPasswordFormValues) => {
-    setIsLoading(true);
-    setServerError(null);
-    setSuccessMessage(null);
-
-    try {
-      await apiClient.post("/auth/forgot-password", { email: values.email });
-      setSuccessMessage("Password reset request sent! Please check your email.");
-      setTimeout(() => navigate("/verify-email"), 1500);
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "Submitted reset request for your email.";
-      setSuccessMessage(msg);
-      setTimeout(() => navigate("/verify-email"), 1500);
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values: ForgotPasswordFormValues) => {
+    sendReset({ email: values.email });
   };
 
   return (
@@ -58,7 +50,11 @@ export function ForgotPasswordPage() {
         </p>
       }
     >
-      <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 18 }}
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         {successMessage && (
           <div
             style={{
@@ -119,8 +115,8 @@ export function ForgotPasswordPage() {
           error={errors.email?.message}
         />
 
-        <AuthButton type="submit" disabled={isLoading}>
-          {isLoading ? "Sending..." : "Send reset link →"}
+        <AuthButton type="submit" disabled={isPending}>
+          {isPending ? "Sending..." : "Send reset link →"}
         </AuthButton>
 
         <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>

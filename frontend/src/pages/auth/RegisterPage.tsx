@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +10,7 @@ import {
   TextField,
   UserIcon,
 } from "../../components/ui/auth";
-import { apiClient } from "../../services/api";
+import { useRegister } from "../../hooks/useAuth";
 
 const registerSchema = z
   .object({
@@ -31,9 +30,13 @@ const registerSchema = z
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export function RegisterPage() {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const { mutate: registerUser, isPending, error } = useRegister();
+
+  const serverError = error
+    ? ((error as any).response?.data?.message ??
+      (error as Error).message ??
+      "Registration failed. Please try again.")
+    : null;
 
   const {
     register,
@@ -49,33 +52,13 @@ export function RegisterPage() {
     },
   });
 
-  const onSubmit = async (values: RegisterFormValues) => {
-    setIsLoading(true);
-    setServerError(null);
-
-    try {
-      await apiClient.post("/auth/register", {
-        username: values.name,
-        email: values.email,
-        password: values.password,
-        confirmPassword: values.confirmPassword,
-      });
-
-      // Save a demo session token and navigate to verification or home
-      localStorage.setItem("accessToken", "user-session-token");
-      navigate("/verify-email");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Registration failed. Please try again.";
-      setServerError(msg);
-
-      // Fallback redirect for seamless demo if backend returns error
-      setTimeout(() => {
-        localStorage.setItem("accessToken", "demo-token");
-        navigate("/verify-email");
-      }, 1200);
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values: RegisterFormValues) => {
+    registerUser({
+      username: values.name,
+      email: values.email,
+      password: values.password,
+      confirmPassword: values.confirmPassword,
+    });
   };
 
   return (
@@ -91,7 +74,11 @@ export function RegisterPage() {
         </p>
       }
     >
-      <form style={{ display: "flex", flexDirection: "column", gap: 16 }} onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 16 }}
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         {serverError && (
           <div
             style={{
@@ -147,8 +134,8 @@ export function RegisterPage() {
           error={errors.confirmPassword?.message}
         />
 
-        <AuthButton type="submit" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Create account →"}
+        <AuthButton type="submit" disabled={isPending}>
+          {isPending ? "Creating account..." : "Create account →"}
         </AuthButton>
 
         <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>

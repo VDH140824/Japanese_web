@@ -19,6 +19,7 @@ D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearni
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\User.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\UserProfile.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\UserStatus.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\exception\GlobalExceptionHandler.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\JapaneseLearningBackendApplication.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\mapper\RefreshTokenMapper.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\mapper\UserMapper.java
