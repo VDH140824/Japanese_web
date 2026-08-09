@@ -11,6 +11,8 @@ import com.japaneselearning.dto.request.VerifyOtpRequest;
 import com.japaneselearning.dto.request.VerifyRegistrationRequest;
 import com.japaneselearning.dto.response.UserResponse;
 
+import java.security.Principal;
+
 public interface AuthService {
 
     void register(RegisterRequest request);
@@ -33,7 +35,7 @@ public interface AuthService {
 
     void verifyEmail(String token);
 
-    UserResponse getCurrentUser(Long userId);
+    UserResponse getCurrentUser(Principal principal);
 
     UserResponse updateProfile(Long userId, UpdateProfileRequest request);
 }

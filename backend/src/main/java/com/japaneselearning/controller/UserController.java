@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -24,8 +26,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(@RequestParam("userId") Long userId) {
-        return ResponseEntity.ok(authService.getCurrentUser(userId));
+    public ResponseEntity<UserResponse> getCurrentUser(Principal principal) {
+        return ResponseEntity.ok(authService.getCurrentUser(principal));
     }
 
     @PutMapping("/profile")

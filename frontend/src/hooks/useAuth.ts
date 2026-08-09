@@ -23,19 +23,25 @@ export const authKeys = {
  */
 export function useCurrentUser() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const accessToken = useAuthStore((s) => s.accessToken);
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useQuery({
     queryKey: authKeys.me,
     queryFn: async () => {
       const user = await authApi.getCurrentUser();
-      // Sync fresh user profile into store (tokens already set)
-      const token = useAuthStore.getState().accessToken ?? "";
+
+      // Keep the existing token state intact; only sync the user profile.
+      const token = accessToken ?? "";
       const refresh = useAuthStore.getState().refreshToken ?? undefined;
-      setAuth(user, token, refresh);
+
+      if (token) {
+        setAuth(user, token, refresh);
+      }
+
       return user;
     },
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !!accessToken,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: false,
   });
@@ -56,12 +62,13 @@ export function useLogin() {
       setAuth(data, accessToken, refreshToken);
       queryClient.setQueryData(authKeys.me, data);
       // Redirect to the page the user was originally trying to access, or /home
-      const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/home";
+      const from =
+        (location.state as { from?: { pathname: string } })?.from?.pathname ??
+        "/home";
       navigate(from, { replace: true });
     },
   });
 }
-
 
 // ─── useRegister ──────────────────────────────────────────────────────────────
 export function useRegister() {
@@ -77,7 +84,8 @@ export function useVerifyRegistration() {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (payload: VerifyRegistrationRequest) => authApi.verifyRegistration(payload),
+    mutationFn: (payload: VerifyRegistrationRequest) =>
+      authApi.verifyRegistration(payload),
     onSuccess: (data) => {
       const accessToken = data.accessToken ?? "";
       const refreshToken = data.refreshToken ?? undefined;
@@ -116,8 +124,7 @@ export function useForgotPassword() {
 // ─── useVerifyOtp ─────────────────────────────────────────────────────────────
 export function useVerifyOtp() {
   return useMutation({
-    mutationFn: (payload: VerifyOtpRequest) =>
-      authApi.verifyOtp(payload),
+    mutationFn: (payload: VerifyOtpRequest) => authApi.verifyOtp(payload),
   });
 }
 

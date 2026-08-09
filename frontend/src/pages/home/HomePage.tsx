@@ -10,13 +10,12 @@ export function HomePage() {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   useCurrentUser();
   const { mutate: logout } = useLogout();
 
-  // Retrieve user info from store / local storage
-  const token = localStorage.getItem("accessToken");
-  const displayName = user?.username ?? "";
-  const userName = token
+  const displayName = user?.username ?? user?.email ?? "";
+  const userName = isAuthenticated
     ? displayName
       ? `こんにちは, ${displayName}`
       : "こんにちは"

@@ -25,9 +25,12 @@ import com.japaneselearning.security.JwtService;
 import com.japaneselearning.service.AuthService;
 import com.japaneselearning.service.EmailService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -274,9 +277,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserResponse getCurrentUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserResponse getCurrentUser(Principal principal) {
+        if (principal == null || principal.getName() == null || principal.getName().isBlank()) {
+            throw new IllegalArgumentException("Unauthenticated user");
+        }
+
+        User user;
+        if (principal instanceof OAuth2AuthenticationToken oauth2AuthenticationToken) {
+            OAuth2User oauth2User = oauth2AuthenticationToken.getPrincipal();
+            String email = oauth2User.getAttribute("email");
+            if (email == null || email.isBlank()) {
+                throw new IllegalArgumentException("OAuth2 account email not found");
+            }
+            user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        } else {
+            user = userRepository.findByUsername(principal.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        }
+
         return mapToUserResponse(user);
     }
 
