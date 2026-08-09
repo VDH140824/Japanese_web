@@ -15,9 +15,6 @@ public class VideoUploadRequest {
     @Size(max = 100, message = "Category must be at most 100 characters")
     private String category;
 
-    @Size(max = 10, message = "JLPT level must be at most 10 characters")
-    private String level;
-
     public VideoUploadRequest() {
     }
 
@@ -43,13 +40,5 @@ public class VideoUploadRequest {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
     }
 }

@@ -2,6 +2,7 @@ package com.japaneselearning.controller;
 
 import com.japaneselearning.dto.request.VideoCommentRequest;
 import com.japaneselearning.dto.request.VideoModerationRequest;
+import com.japaneselearning.dto.response.VideoCategoryResponse;
 import com.japaneselearning.dto.response.VideoCommentResponse;
 import com.japaneselearning.dto.response.VideoResponse;
 import com.japaneselearning.service.VideoService;
@@ -40,9 +41,13 @@ public class VideoController {
             @RequestPart("file") MultipartFile file,
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam("category") String category,
-            @RequestParam(value = "level", required = false) String level) {
-        return ResponseEntity.ok(videoService.uploadVideo(principal, file, title, description, category, level));
+            @RequestParam("category") String category) {
+        return ResponseEntity.ok(videoService.uploadVideo(principal, file, title, description, category));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<VideoCategoryResponse>> getVideoCategories() {
+        return ResponseEntity.ok(videoService.getVideoCategories());
     }
 
     @GetMapping

@@ -14,7 +14,6 @@ function buildVideoFormData(payload: VideoUploadRequest) {
   formData.append("title", payload.title);
   formData.append("description", payload.description ?? "");
   formData.append("category", payload.category);
-  formData.append("level", payload.level ?? "");
   return formData;
 }
 
@@ -57,6 +56,14 @@ export const videoApi = {
         "Content-Type": "multipart/form-data",
       },
     });
+    return data;
+  },
+
+  getVideoCategories: async () => {
+    const { data } =
+      await apiClient.get<
+        { id?: number; name: string; description?: string }[]
+      >("/videos/categories");
     return data;
   },
 

@@ -168,7 +168,6 @@ export function VideoPlayer({
           <div className="video-player-metadata">
             <div className="video-player-kicker">
               <span>{video.category ?? "General"}</span>
-              <span>{video.level ?? "All levels"}</span>
               {typeof video.viewCount === "number" && (
                 <span>{video.viewCount} views</span>
               )}

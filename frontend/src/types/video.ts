@@ -21,7 +21,6 @@ export interface VideoResponse {
   publicId?: string | null;
   thumbnailUrl?: string | null;
   category?: string | null;
-  level?: string | null;
   status?: VideoStatus;
   rejectionReason?: string | null;
   viewCount?: number | null;
@@ -94,7 +93,6 @@ export interface VideoUploadRequest {
   title: string;
   description?: string;
   category: string;
-  level?: string;
 }
 
 export interface VideoModerationRequest {

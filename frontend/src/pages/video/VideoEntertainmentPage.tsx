@@ -52,6 +52,7 @@ export function VideoEntertainmentPage() {
   const [commentsPage, setCommentsPage] = useState(0);
   const [commentsHasMore, setCommentsHasMore] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState<string | null>(null);
   const [commentDraft, setCommentDraft] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [deletingCommentIds, setDeletingCommentIds] = useState<Set<number>>(
@@ -328,7 +329,7 @@ export function VideoEntertainmentPage() {
     append = false,
   ) => {
     setCommentsLoading(true);
-    setError(null);
+    setCommentsError(null);
 
     try {
       const response = await videoApi.getVideoComments(
@@ -343,7 +344,7 @@ export function VideoEntertainmentPage() {
         !(response.last ?? content.length < COMMENTS_PAGE_SIZE),
       );
     } catch {
-      setError("Unable to load comments.");
+      setCommentsError("Unable to load comments.");
     } finally {
       setCommentsLoading(false);
     }
@@ -407,6 +408,7 @@ export function VideoEntertainmentPage() {
     if (!commentsVideoId || !commentDraft.trim()) return;
 
     setCommentSubmitting(true);
+    setCommentsError(null);
     setError(null);
 
     try {
@@ -453,14 +455,20 @@ export function VideoEntertainmentPage() {
 
     try {
       await videoApi.deleteVideo(videoId);
-      setVideos((current) => current.filter((video) => video.id !== videoId));
+      setVideos((current) => {
+        const next = current.filter((video) => video.id !== videoId);
+        setActiveIndex((currentActive) =>
+          next.length === 0
+            ? 0
+            : Math.max(0, Math.min(currentActive, next.length - 1)),
+        );
+        return next;
+      });
       if (commentsVideoId === videoId) {
         setCommentsVideoId(null);
         setComments([]);
+        setCommentsError(null);
       }
-      setActiveIndex((current) =>
-        Math.max(0, Math.min(current, videos.length - 2)),
-      );
     } catch {
       setError("Unable to delete video.");
     } finally {
@@ -521,8 +529,13 @@ export function VideoEntertainmentPage() {
     return (
       <div className="video-entertainment-page video-entertainment-empty">
         <div className="video-entertainment-empty-state">
-          <h1>No approved videos yet</h1>
-          <p>Come back later for fresh entertainment content.</p>
+          <div className="video-entertainment-empty-icon">🎬</div>
+          <p className="video-entertainment-kicker">Video Entertainment</p>
+          <h1>No videos yet</h1>
+          <p>Be the first person to share an entertainment video.</p>
+          <button type="button" onClick={() => navigate("/videos/upload")}>
+            + Upload Video
+          </button>
         </div>
       </div>
     );
@@ -533,12 +546,18 @@ export function VideoEntertainmentPage() {
       <header className="video-entertainment-header">
         <div>
           <p className="video-entertainment-kicker">Video Entertainment</p>
-          <h1>Short-form Japanese learning & entertainment feed</h1>
+          <h1>Discover and share entertaining videos</h1>
         </div>
 
         <div className="video-entertainment-header-actions">
-          <button type="button" onClick={() => navigate("/videos/upload")}>
-            Upload video
+          <button
+            type="button"
+            className="video-entertainment-upload-btn"
+            onClick={() => navigate("/videos/upload")}
+            aria-label="Upload a video"
+          >
+            <span>+</span>
+            <span>Upload</span>
           </button>
         </div>
       </header>
@@ -594,6 +613,10 @@ export function VideoEntertainmentPage() {
           </div>
 
           <div className="video-comments-list">
+            {commentsError && (
+              <div className="video-comments-empty">{commentsError}</div>
+            )}
+
             {comments.map((comment) => (
               <article className="video-comment-card" key={comment.id}>
                 <div className="video-comment-avatar">
@@ -669,6 +692,16 @@ export function VideoEntertainmentPage() {
           </div>
         </aside>
       )}
+
+      <button
+        type="button"
+        className="video-entertainment-fab"
+        onClick={() => navigate("/videos/upload")}
+        aria-label="Upload video"
+        title="Upload video"
+      >
+        +
+      </button>
 
       {error && videos.length > 0 && (
         <div className="video-entertainment-toast">{error}</div>

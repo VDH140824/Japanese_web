@@ -42,14 +42,7 @@ export function AppRouter() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/videos"
-          element={
-            <ProtectedRoute>
-              <VideoEntertainmentPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/videos" element={<VideoEntertainmentPage />} />
         <Route
           path="/videos/upload"
           element={

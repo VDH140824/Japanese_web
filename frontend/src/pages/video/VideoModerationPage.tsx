@@ -14,7 +14,9 @@ export function VideoModerationPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const isAdmin =
+    user?.role?.toUpperCase() === "ADMIN" ||
+    user?.role?.toUpperCase() === "MODERATOR";
 
   useEffect(() => {
     let mounted = true;
@@ -136,10 +138,6 @@ export function VideoModerationPage() {
                   <div>
                     <dt>Category</dt>
                     <dd>{video.category ?? "General"}</dd>
-                  </div>
-                  <div>
-                    <dt>JLPT</dt>
-                    <dd>{video.level ?? "N/A"}</dd>
                   </div>
                   <div>
                     <dt>Created</dt>

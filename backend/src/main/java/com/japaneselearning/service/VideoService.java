@@ -12,7 +12,9 @@ import java.util.List;
 
 public interface VideoService {
 
-    VideoResponse uploadVideo(Principal principal, MultipartFile file, String title, String description, String category, String level);
+    VideoResponse uploadVideo(Principal principal, MultipartFile file, String title, String description, String category);
+
+    List<com.japaneselearning.dto.response.VideoCategoryResponse> getVideoCategories();
 
     Page<VideoResponse> getApprovedVideos(int page, int size, String category);
 

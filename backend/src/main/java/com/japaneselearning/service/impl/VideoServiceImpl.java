@@ -3,6 +3,7 @@ package com.japaneselearning.service.impl;
 import com.japaneselearning.dto.request.VideoCommentRequest;
 import com.japaneselearning.dto.request.VideoModerationRequest;
 import com.japaneselearning.dto.response.CloudinaryUploadResponse;
+import com.japaneselearning.dto.response.VideoCategoryResponse;
 import com.japaneselearning.dto.response.VideoCommentResponse;
 import com.japaneselearning.dto.response.VideoResponse;
 import com.japaneselearning.dto.response.VideoUserResponse;
@@ -34,15 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -95,16 +93,12 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public VideoResponse uploadVideo(Principal principal, MultipartFile file, String title, String description, String category, String level) {
+    public VideoResponse uploadVideo(Principal principal, MultipartFile file, String title, String description, String category) {
         User user = requireCurrentUser(principal);
-        validateUpload(file, title, category, level);
+        validateUpload(file, title, category);
 
         VideoCategory videoCategory = videoCategoryRepository.findByCategoryName(category.trim())
-                .orElseGet(() -> {
-                    VideoCategory newCategory = new VideoCategory();
-                    newCategory.setCategoryName(category.trim());
-                    return videoCategoryRepository.save(newCategory);
-                });
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
 
         CloudinaryUploadResponse uploadResponse = cloudinaryService.uploadVideo(file);
 
@@ -116,12 +110,29 @@ public class VideoServiceImpl implements VideoService {
         video.setVideoUrl(uploadResponse.getVideoUrl());
         video.setCloudinaryPublicId(uploadResponse.getPublicId());
         video.setThumbnailUrl(uploadResponse.getThumbnailUrl());
-        video.setJlptLevel(normalize(level));
         video.setStatus(STATUS_PENDING);
         video.setViewCount(0L);
 
-        Video saved = videoRepository.save(video);
-        return toResponse(saved, List.of());
+        try {
+            Video saved = videoRepository.save(video);
+            return toResponse(saved, List.of());
+        } catch (RuntimeException ex) {
+            cloudinaryService.deleteVideo(uploadResponse.getPublicId());
+            throw ex;
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VideoCategoryResponse> getVideoCategories() {
+        return videoCategoryRepository.findAll(Sort.by(Sort.Direction.ASC, "categoryName"))
+                .stream()
+                .map(category -> new VideoCategoryResponse(
+                        category.getCategoryId(),
+                        category.getCategoryName(),
+                        category.getDescription()
+                ))
+                .toList();
     }
 
     @Override
@@ -307,7 +318,7 @@ public class VideoServiceImpl implements VideoService {
         videoCommentRepository.delete(comment);
     }
 
-    private void validateUpload(MultipartFile file, String title, String category, String level) {
+    private void validateUpload(MultipartFile file, String title, String category) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Video file is required");
         }
@@ -315,7 +326,7 @@ public class VideoServiceImpl implements VideoService {
             throw new IllegalArgumentException("Video file is too large");
         }
         String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_VIDEO_MIME_TYPES.contains(contentType.toLowerCase(Locale.ROOT))) {
+        if (contentType == null || !ALLOWED_VIDEO_MIME_TYPES.contains(contentType.toLowerCase())) {
             throw new IllegalArgumentException("Unsupported video file type");
         }
         if (title == null || title.isBlank()) {
@@ -323,9 +334,6 @@ public class VideoServiceImpl implements VideoService {
         }
         if (category == null || category.isBlank()) {
             throw new IllegalArgumentException("Category is required");
-        }
-        if (level != null && !level.isBlank() && level.trim().length() > 10) {
-            throw new IllegalArgumentException("JLPT level must be at most 10 characters");
         }
     }
 
@@ -386,10 +394,6 @@ public class VideoServiceImpl implements VideoService {
                 && Objects.equals(current.getCategory().getCategoryId(), candidate.getCategory().getCategoryId())) {
             score += 100;
         }
-        if (current.getJlptLevel() != null && candidate.getJlptLevel() != null
-                && current.getJlptLevel().equalsIgnoreCase(candidate.getJlptLevel())) {
-            score += 50;
-        }
         List<String> candidateTags = fetchTags(candidate.getVideoId());
         Set<String> overlap = new LinkedHashSet<>(currentTags);
         overlap.retainAll(candidateTags);
@@ -416,7 +420,7 @@ public class VideoServiceImpl implements VideoService {
         response.setPublicId(video.getCloudinaryPublicId());
         response.setThumbnailUrl(video.getThumbnailUrl());
         response.setCategory(video.getCategory() != null ? video.getCategory().getCategoryName() : null);
-        response.setLevel(video.getJlptLevel());
+        response.setLevel(null);
         response.setStatus(video.getStatus());
         response.setRejectionReason(video.getRejectionReason());
         response.setViewCount(video.getViewCount());
@@ -448,9 +452,5 @@ public class VideoServiceImpl implements VideoService {
             return null;
         }
         return new VideoUserResponse(user.getUserId(), user.getUsername(), user.getAvatarUrl());
-    }
-
-    private String normalize(String level) {
-        return level == null ? null : level.trim().toUpperCase(Locale.ROOT);
     }
 }

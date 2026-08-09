@@ -1,90 +1,76 @@
 package com.japaneselearning.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
+import com.cloudinary.utils.ObjectUtils;
 import com.japaneselearning.dto.response.CloudinaryUploadResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 
 @Service
 public class CloudinaryService {
 
-    private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
+    private static final String TARGET_ASSET_FOLDER = "Video/japanese-learning/user_upload";
+    private static final Set<String> ALLOWED_VIDEO_CONTENT_TYPES = Set.of(
+            "video/mp4",
+            "video/webm",
+            "video/ogg",
+            "video/quicktime",
+            "video/x-msvideo",
+            "video/x-matroska"
+    );
 
-    @Value("${cloudinary.cloud-name:}")
-    private String cloudName;
+    private final Cloudinary cloudinary;
 
-    @Value("${cloudinary.api-key:}")
-    private String apiKey;
-
-    @Value("${cloudinary.api-secret:}")
-    private String apiSecret;
-
-    @Value("${cloudinary.folder:video_entertainment}")
-    private String folder;
-
-    public CloudinaryService(ObjectMapper objectMapper) {
-        this.httpClient = HttpClient.newBuilder().build();
-        this.objectMapper = objectMapper;
+    public CloudinaryService(Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
     }
 
     public CloudinaryUploadResponse uploadVideo(MultipartFile file) {
-        validateConfig();
+        validateVideoFile(file);
+
+        Path tempFile = null;
         try {
-            String timestamp = String.valueOf(Instant.now().getEpochSecond());
-            String signature = generateSignature(Map.of(
-                    "folder", folder,
-                    "resource_type", "video",
-                    "timestamp", timestamp
-            ));
+            String suffix = resolveSuffix(file.getOriginalFilename(), file.getContentType());
+            tempFile = Files.createTempFile("video-upload-", suffix);
+            file.transferTo(tempFile);
 
-            String boundary = "----VideoUploadBoundary" + System.currentTimeMillis();
-            byte[] body = buildMultipartBody(boundary, file, timestamp, signature);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader().uploadLarge(
+                    tempFile.toFile(),
+                    ObjectUtils.asMap(
+                            "resource_type", "video",
+                            "asset_folder", TARGET_ASSET_FOLDER,
+                            "use_filename", true,
+                            "unique_filename", false
+                    )
+            );
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.cloudinary.com/v1_1/" + cloudName + "/video/upload"))
-                    .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(body))
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new IllegalStateException("Cloudinary upload failed: " + response.body());
-            }
-
-            JsonNode json = objectMapper.readTree(response.body());
-            String secureUrl = json.path("secure_url").asText(null);
-            String publicId = json.path("public_id").asText(null);
-            String thumbnailUrl = json.path("thumbnail_url").asText(null);
-            if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
-                thumbnailUrl = json.path("eager").isArray() && json.path("eager").size() > 0
-                        ? json.path("eager").get(0).path("secure_url").asText(null)
-                        : null;
-            }
-
-            return new CloudinaryUploadResponse(secureUrl, publicId, thumbnailUrl);
+            return new CloudinaryUploadResponse(
+                    asString(uploadResult.get("secure_url")),
+                    asString(uploadResult.get("public_id")),
+                    asString(uploadResult.get("resource_type")),
+                    asString(uploadResult.get("format")),
+                    asDouble(uploadResult.get("duration")),
+                    asInteger(uploadResult.get("width")),
+                    asInteger(uploadResult.get("height")),
+                    buildThumbnailUrl(uploadResult)
+            );
         } catch (IOException e) {
-            throw new UncheckedIOException("Failed to upload video to Cloudinary", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("Cloudinary upload interrupted", e);
+            throw new IllegalStateException("Failed to upload video to Cloudinary", e);
+        } finally {
+            if (tempFile != null) {
+                try {
+                    Files.deleteIfExists(tempFile);
+                } catch (IOException ignored) {
+                }
+            }
         }
     }
 
@@ -92,101 +78,87 @@ public class CloudinaryService {
         if (publicId == null || publicId.isBlank()) {
             return;
         }
-        validateConfig();
+
         try {
-            String timestamp = String.valueOf(Instant.now().getEpochSecond());
-            String signature = generateSignature(Map.of(
-                    "public_id", publicId,
-                    "resource_type", "video",
-                    "timestamp", timestamp
-            ));
-
-            String form = "public_id=" + urlEncode(publicId)
-                    + "&resource_type=video"
-                    + "&timestamp=" + timestamp
-                    + "&api_key=" + urlEncode(apiKey)
-                    + "&signature=" + urlEncode(signature);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.cloudinary.com/v1_1/" + cloudName + "/video/destroy"))
-                    .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                    .POST(HttpRequest.BodyPublishers.ofString(form))
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new IllegalStateException("Cloudinary delete failed: " + response.body());
-            }
+            cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "video"));
         } catch (IOException e) {
-            throw new UncheckedIOException("Failed to delete video from Cloudinary", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("Cloudinary delete interrupted", e);
+            throw new IllegalStateException("Failed to delete video from Cloudinary", e);
         }
     }
 
-    private void validateConfig() {
-        if (cloudName == null || cloudName.isBlank()
-                || apiKey == null || apiKey.isBlank()
-                || apiSecret == null || apiSecret.isBlank()) {
-            throw new IllegalStateException("Cloudinary configuration is missing");
+    private void validateVideoFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Video file is required");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.toLowerCase().startsWith("video/") || !ALLOWED_VIDEO_CONTENT_TYPES.contains(contentType.toLowerCase())) {
+            throw new IllegalArgumentException("Unsupported video file type");
         }
     }
 
-    private byte[] buildMultipartBody(String boundary, MultipartFile file, String timestamp, String signature) throws IOException {
-        StringBuilder builder = new StringBuilder();
-        appendFormField(builder, boundary, "file", file.getOriginalFilename(), file.getContentType(), file.getBytes());
-        appendTextField(builder, boundary, "api_key", apiKey);
-        appendTextField(builder, boundary, "timestamp", timestamp);
-        appendTextField(builder, boundary, "folder", folder);
-        appendTextField(builder, boundary, "resource_type", "video");
-        appendTextField(builder, boundary, "signature", signature);
-        builder.append("--").append(boundary).append("--").append("\r\n");
-        return builder.toString().getBytes(StandardCharsets.ISO_8859_1);
-    }
-
-    private void appendTextField(StringBuilder builder, String boundary, String name, String value) {
-        builder.append("--").append(boundary).append("\r\n");
-        builder.append("Content-Disposition: form-data; name=\"").append(name).append("\"").append("\r\n\r\n");
-        builder.append(value).append("\r\n");
-    }
-
-    private void appendFormField(StringBuilder builder, String boundary, String name, String filename, String contentType, byte[] bytes) {
-        builder.append("--").append(boundary).append("\r\n");
-        builder.append("Content-Disposition: form-data; name=\"").append(name).append("\"; filename=\"")
-                .append(filename == null ? "video" : filename).append("\"").append("\r\n");
-        builder.append("Content-Type: ").append(contentType == null ? MediaType.APPLICATION_OCTET_STREAM_VALUE : contentType)
-                .append("\r\n\r\n");
-        builder.append(new String(bytes, StandardCharsets.ISO_8859_1)).append("\r\n");
-    }
-
-    private String generateSignature(Map<String, String> params) {
-        try {
-            TreeMap<String, String> sorted = new TreeMap<>(params);
-            StringBuilder base = new StringBuilder();
-            sorted.forEach((key, value) -> {
-                if (value != null && !value.isBlank()) {
-                    if (base.length() > 0) {
-                        base.append("&");
-                    }
-                    base.append(key).append("=").append(value);
-                }
-            });
-            base.append(apiSecret);
-
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            byte[] hash = digest.digest(base.toString().getBytes(StandardCharsets.UTF_8));
-            StringBuilder hex = new StringBuilder();
-            for (byte b : hash) {
-                hex.append(String.format("%02x", b));
+    private String resolveSuffix(String originalFilename, String contentType) {
+        if (originalFilename != null) {
+            int dotIndex = originalFilename.lastIndexOf('.');
+            if (dotIndex >= 0 && dotIndex < originalFilename.length() - 1) {
+                String extension = originalFilename.substring(dotIndex);
+                return extension.replaceAll("[^a-zA-Z0-9.]", "_");
             }
-            return hex.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Unable to generate Cloudinary signature", e);
         }
+
+        if ("video/mp4".equalsIgnoreCase(contentType)) {
+            return ".mp4";
+        }
+        if ("video/webm".equalsIgnoreCase(contentType)) {
+            return ".webm";
+        }
+        if ("video/quicktime".equalsIgnoreCase(contentType)) {
+            return ".mov";
+        }
+        if ("video/ogg".equalsIgnoreCase(contentType)) {
+            return ".ogv";
+        }
+        if ("video/x-matroska".equalsIgnoreCase(contentType)) {
+            return ".mkv";
+        }
+        return ".tmp";
     }
 
-    private String urlEncode(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    private String buildThumbnailUrl(Map<String, Object> uploadResult) {
+        String publicId = asString(uploadResult.get("public_id"));
+        if (publicId == null || publicId.isBlank()) {
+            return null;
+        }
+
+        return cloudinary.url()
+                .secure(true)
+                .resourceType("video")
+                .transformation(new Transformation().crop("fill").width(640).height(360))
+                .format("jpg")
+                .generate(publicId);
+    }
+
+    private String asString(Object value) {
+        return value == null ? null : String.valueOf(value);
+    }
+
+    private Double asDouble(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number number) {
+            return number.doubleValue();
+        }
+        return Double.valueOf(String.valueOf(value));
+    }
+
+    private Integer asInteger(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        return Integer.valueOf(String.valueOf(value));
     }
 }

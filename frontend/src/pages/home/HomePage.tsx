@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useCurrentUser, useLogout } from "../../hooks/useAuth";
 import "./HomePage.css";
@@ -16,7 +16,11 @@ export function HomePage() {
   // Retrieve user info from store / local storage
   const token = localStorage.getItem("accessToken");
   const displayName = user?.username ?? "";
-  const userName = token ? (displayName ? `こんにちは, ${displayName}` : "こんにちは") : "Khách";
+  const userName = token
+    ? displayName
+      ? `こんにちは, ${displayName}`
+      : "こんにちは"
+    : "Khách";
   const avatarInitial = displayName ? displayName.charAt(0).toUpperCase() : "N";
 
   const handleLogout = () => {
@@ -40,7 +44,12 @@ export function HomePage() {
             type="button"
             className="brand-logo"
             onClick={() => navigate("/home")}
-            style={{ background: "none", border: "none", padding: 0, textAlign: "left" }}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              textAlign: "left",
+            }}
           >
             <div className="brand-icon">🌸</div>
             <div className="brand-text">
@@ -81,9 +90,9 @@ export function HomePage() {
               </button>
             </li>
             <li>
-              <button type="button" className="nav-item-btn">
-                <span>🎯</span> Video giải trí
-              </button>
+              <Link to="/videos" className="nav-item-btn">
+                <span>🎯</span> Video
+              </Link>
             </li>
           </ul>
 
@@ -94,7 +103,12 @@ export function HomePage() {
                 <span className="user-name">{userName}</span>
               </div>
             </div>
-            <button type="button" className="logout-btn" onClick={handleLogout} title="Đăng xuất">
+            <button
+              type="button"
+              className="logout-btn"
+              onClick={handleLogout}
+              title="Đăng xuất"
+            >
               Đăng xuất 🚪
             </button>
           </div>
@@ -111,10 +125,12 @@ export function HomePage() {
               <span>👋</span> おかえりなさい (Welcome Back!)
             </div>
             <h1 className="hero-title">
-              Chinh phục tiếng Nhật <span>JLPT {selectedJlpt}</span> dễ dàng hơn bao giờ hết
+              Chinh phục tiếng Nhật <span>JLPT {selectedJlpt}</span> dễ dàng hơn
+              bao giờ hết
             </h1>
             <p className="hero-desc">
-              Hệ thống học tập thông minh tích hợp Flashcard lặp lại ngắt quãng (SRS), tra cứu Hán tự Kanji & bộ đề thi thử sát thực tế.
+              Hệ thống học tập thông minh tích hợp Flashcard lặp lại ngắt quãng
+              (SRS), tra cứu Hán tự Kanji & bộ đề thi thử sát thực tế.
             </p>
 
             <div className="jlpt-selector">
@@ -138,10 +154,15 @@ export function HomePage() {
               <span>⚡</span> Bài học đang dở
             </div>
             <h3 className="continue-title">Minna no Nihongo - Bài 12</h3>
-            <p className="continue-subtitle">Cấu trúc Ngữ pháp: ~てから & ~てはいけません</p>
+            <p className="continue-subtitle">
+              Cấu trúc Ngữ pháp: ~てから & ~てはいけません
+            </p>
             <div className="progress-container">
               <div className="progress-bar-bg">
-                <div className="progress-bar-fill" style={{ width: "68%" }}></div>
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: "68%" }}
+                ></div>
               </div>
               <div className="progress-info">
                 <span>Tiến độ bài học</span>
@@ -157,7 +178,13 @@ export function HomePage() {
         {/* Learning Statistics Row */}
         <section className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon-wrapper" style={{ background: "rgba(249, 115, 22, 0.15)", color: "#f97316" }}>
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: "rgba(249, 115, 22, 0.15)",
+                color: "#f97316",
+              }}
+            >
               🔥
             </div>
             <div className="stat-info">
@@ -167,7 +194,13 @@ export function HomePage() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon-wrapper" style={{ background: "rgba(236, 72, 153, 0.15)", color: "#ec4899" }}>
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: "rgba(236, 72, 153, 0.15)",
+                color: "#ec4899",
+              }}
+            >
               🌸
             </div>
             <div className="stat-info">
@@ -177,7 +210,13 @@ export function HomePage() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon-wrapper" style={{ background: "rgba(14, 165, 233, 0.15)", color: "#0ea5e9" }}>
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: "rgba(14, 165, 233, 0.15)",
+                color: "#0ea5e9",
+              }}
+            >
               📚
             </div>
             <div className="stat-info">
@@ -187,7 +226,13 @@ export function HomePage() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon-wrapper" style={{ background: "rgba(168, 85, 247, 0.15)", color: "#a855f7" }}>
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: "rgba(168, 85, 247, 0.15)",
+                color: "#a855f7",
+              }}
+            >
               ⚡
             </div>
             <div className="stat-info">
@@ -210,14 +255,18 @@ export function HomePage() {
             <div className="feature-card">
               <div>
                 <div className="feature-top">
-                  <div className="feature-icon" style={{ background: "rgba(14, 165, 233, 0.15)" }}>
+                  <div
+                    className="feature-icon"
+                    style={{ background: "rgba(14, 165, 233, 0.15)" }}
+                  >
                     📚
                   </div>
                   <span className="feature-tag">1,500+ từ vựng</span>
                 </div>
                 <h3 className="feature-title">Kho Từ Vựng N5 - N1</h3>
                 <p className="feature-desc">
-                  Tra cứu từ vựng theo chủ đề, giáo trình Minna no Nihongo, kèm phát âm chuẩn người bản xứ.
+                  Tra cứu từ vựng theo chủ đề, giáo trình Minna no Nihongo, kèm
+                  phát âm chuẩn người bản xứ.
                 </p>
               </div>
               <div className="feature-action">
@@ -228,14 +277,18 @@ export function HomePage() {
             <div className="feature-card">
               <div>
                 <div className="feature-top">
-                  <div className="feature-icon" style={{ background: "rgba(244, 63, 94, 0.15)" }}>
+                  <div
+                    className="feature-icon"
+                    style={{ background: "rgba(244, 63, 94, 0.15)" }}
+                  >
                     ⛩️
                   </div>
                   <span className="feature-tag">2,136 Kanji</span>
                 </div>
                 <h3 className="feature-title">Hán Tự Kanji Mastery</h3>
                 <p className="feature-desc">
-                  Hướng dẫn thứ tự nét vẽ, Âm Ôn (Onyomi), Âm Kun (Kunyomi), bộ thủ và ví dụ ghép từ.
+                  Hướng dẫn thứ tự nét vẽ, Âm Ôn (Onyomi), Âm Kun (Kunyomi), bộ
+                  thủ và ví dụ ghép từ.
                 </p>
               </div>
               <div className="feature-action">
@@ -246,14 +299,18 @@ export function HomePage() {
             <div className="feature-card">
               <div>
                 <div className="feature-top">
-                  <div className="feature-icon" style={{ background: "rgba(168, 85, 247, 0.15)" }}>
+                  <div
+                    className="feature-icon"
+                    style={{ background: "rgba(168, 85, 247, 0.15)" }}
+                  >
                     📝
                   </div>
                   <span className="feature-tag">Cấu trúc JLPT</span>
                 </div>
                 <h3 className="feature-title">Ngữ Pháp Tiếng Nhật</h3>
                 <p className="feature-desc">
-                  Tổng hợp ngữ pháp chi tiết theo cấp độ, mẫu câu ứng dụng đời sống và các bẫy thường gặp.
+                  Tổng hợp ngữ pháp chi tiết theo cấp độ, mẫu câu ứng dụng đời
+                  sống và các bẫy thường gặp.
                 </p>
               </div>
               <div className="feature-action">
@@ -264,14 +321,18 @@ export function HomePage() {
             <div className="feature-card">
               <div>
                 <div className="feature-top">
-                  <div className="feature-icon" style={{ background: "rgba(16, 185, 129, 0.15)" }}>
+                  <div
+                    className="feature-icon"
+                    style={{ background: "rgba(16, 185, 129, 0.15)" }}
+                  >
                     🃏
                   </div>
                   <span className="feature-tag">Thuật toán SRS</span>
                 </div>
                 <h3 className="feature-title">Thẻ Ghi Nhớ Flashcards</h3>
                 <p className="feature-desc">
-                  Phương pháp ghi nhớ lặp lại ngắt quãng thông minh, tự động ôn tập các từ bạn hay quên.
+                  Phương pháp ghi nhớ lặp lại ngắt quãng thông minh, tự động ôn
+                  tập các từ bạn hay quên.
                 </p>
               </div>
               <div className="feature-action">
@@ -282,14 +343,18 @@ export function HomePage() {
             <div className="feature-card">
               <div>
                 <div className="feature-top">
-                  <div className="feature-icon" style={{ background: "rgba(245, 158, 11, 0.15)" }}>
+                  <div
+                    className="feature-icon"
+                    style={{ background: "rgba(245, 158, 11, 0.15)" }}
+                  >
                     🎧
                   </div>
                   <span className="feature-tag">Audio HD</span>
                 </div>
                 <h3 className="feature-title">Luyện Nghe & Kaiwa</h3>
                 <p className="feature-desc">
-                  Bài nghe hội thoại thực tế, luyện phản xạ nghe nói tiếng Nhật chuẩn tự nhiên.
+                  Bài nghe hội thoại thực tế, luyện phản xạ nghe nói tiếng Nhật
+                  chuẩn tự nhiên.
                 </p>
               </div>
               <div className="feature-action">
@@ -300,14 +365,18 @@ export function HomePage() {
             <div className="feature-card">
               <div>
                 <div className="feature-top">
-                  <div className="feature-icon" style={{ background: "rgba(6, 182, 212, 0.15)" }}>
+                  <div
+                    className="feature-icon"
+                    style={{ background: "rgba(6, 182, 212, 0.15)" }}
+                  >
                     ⏱️
                   </div>
                   <span className="feature-tag">Đề mới 2026</span>
                 </div>
                 <h3 className="feature-title">Đề Thi Thử JLPT</h3>
                 <p className="feature-desc">
-                  Bộ đề thi trắc nghiệm bấm giờ thực tế N5 - N1 có đáp án chi tiết và xếp hạng điểm.
+                  Bộ đề thi trắc nghiệm bấm giờ thực tế N5 - N1 có đáp án chi
+                  tiết và xếp hạng điểm.
                 </p>
               </div>
               <div className="feature-action">
@@ -326,7 +395,11 @@ export function HomePage() {
               <button
                 type="button"
                 className="nav-item-btn"
-                style={{ background: "rgba(255, 255, 255, 0.1)", padding: "4px 10px", fontSize: "0.8rem" }}
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  padding: "4px 10px",
+                  fontSize: "0.8rem",
+                }}
                 onClick={playAudioSample}
                 disabled={isPlayingAudio}
               >
@@ -345,7 +418,9 @@ export function HomePage() {
 
             <div className="wotd-example">
               <div className="wotd-jp-sentence">春になると桜が咲きます。</div>
-              <div className="wotd-vi-sentence">Vào mùa xuân, hoa anh đào sẽ nở rộ.</div>
+              <div className="wotd-vi-sentence">
+                Vào mùa xuân, hoa anh đào sẽ nở rộ.
+              </div>
             </div>
           </div>
 
@@ -362,8 +437,12 @@ export function HomePage() {
               <div className="roadmap-item completed">
                 <div className="roadmap-status-icon">✓</div>
                 <div className="roadmap-details">
-                  <span className="roadmap-step-title">Bảng chữ cái Hiragana & Katakana</span>
-                  <span className="roadmap-step-desc">Đã hoàn thành 100% • 92 Ký tự</span>
+                  <span className="roadmap-step-title">
+                    Bảng chữ cái Hiragana & Katakana
+                  </span>
+                  <span className="roadmap-step-desc">
+                    Đã hoàn thành 100% • 92 Ký tự
+                  </span>
                 </div>
               </div>
 
@@ -371,22 +450,30 @@ export function HomePage() {
                 <div className="roadmap-status-icon">✓</div>
                 <div className="roadmap-details">
                   <span className="roadmap-step-title">Trình độ Sơ cấp N5</span>
-                  <span className="roadmap-step-desc">Đã hoàn thành 100% • 80 Kanji & 800 Từ vựng</span>
+                  <span className="roadmap-step-desc">
+                    Đã hoàn thành 100% • 80 Kanji & 800 Từ vựng
+                  </span>
                 </div>
               </div>
 
               <div className="roadmap-item current">
                 <div className="roadmap-status-icon">⚡</div>
                 <div className="roadmap-details">
-                  <span className="roadmap-step-title">Trình độ Sơ cấp N4 (Đang học)</span>
-                  <span className="roadmap-step-desc">Tiến độ 45% • 170 Kanji & 1,200 Từ vựng</span>
+                  <span className="roadmap-step-title">
+                    Trình độ Sơ cấp N4 (Đang học)
+                  </span>
+                  <span className="roadmap-step-desc">
+                    Tiến độ 45% • 170 Kanji & 1,200 Từ vựng
+                  </span>
                 </div>
               </div>
 
               <div className="roadmap-item locked">
                 <div className="roadmap-status-icon">🔒</div>
                 <div className="roadmap-details">
-                  <span className="roadmap-step-title">Trình độ Trung cấp N3</span>
+                  <span className="roadmap-step-title">
+                    Trình độ Trung cấp N3
+                  </span>
                   <span className="roadmap-step-desc">Chưa mở khóa</span>
                 </div>
               </div>
@@ -397,7 +484,9 @@ export function HomePage() {
 
       {/* Footer */}
       <footer className="home-footer">
-        <p>© 2026 Japanese Learning Platform — Nihongo Master. Chúc bạn học tốt!</p>
+        <p>
+          © 2026 Japanese Learning Platform — Nihongo Master. Chúc bạn học tốt!
+        </p>
       </footer>
     </div>
   );
