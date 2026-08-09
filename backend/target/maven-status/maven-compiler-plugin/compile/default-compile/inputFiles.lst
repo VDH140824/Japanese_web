@@ -8,6 +8,8 @@ D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearni
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\RegisterRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\ResetPasswordRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\UpdateProfileRequest.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\VerifyOtpRequest.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\request\VerifyRegistrationRequest.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\dto\response\UserResponse.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\EmailVerification.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\entity\Gender.java
@@ -36,4 +38,6 @@ D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearni
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\OAuth2SuccessHandler.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\security\RestAuthenticationEntryPoint.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\service\AuthService.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\service\EmailService.java
 D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\service\impl\AuthServiceImpl.java
+D:\FPT\K9_FALL2026\Project\Japanese_web\backend\src\main\java\com\japaneselearning\service\impl\EmailServiceImpl.java

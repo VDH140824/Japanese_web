@@ -7,17 +7,23 @@ import com.japaneselearning.dto.request.RefreshTokenRequest;
 import com.japaneselearning.dto.request.RegisterRequest;
 import com.japaneselearning.dto.request.ResetPasswordRequest;
 import com.japaneselearning.dto.request.UpdateProfileRequest;
+import com.japaneselearning.dto.request.VerifyOtpRequest;
+import com.japaneselearning.dto.request.VerifyRegistrationRequest;
 import com.japaneselearning.dto.response.UserResponse;
 
 public interface AuthService {
 
-    UserResponse register(RegisterRequest request);
+    void register(RegisterRequest request);
+
+    UserResponse verifyRegistration(VerifyRegistrationRequest request);
 
     UserResponse login(LoginRequest request);
 
     UserResponse refreshToken(RefreshTokenRequest request);
 
     void forgotPassword(ForgotPasswordRequest request);
+
+    void verifyOtp(VerifyOtpRequest request);
 
     void resetPassword(ResetPasswordRequest request);
 

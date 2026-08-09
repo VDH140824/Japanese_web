@@ -6,6 +6,8 @@ import com.japaneselearning.dto.request.LoginRequest;
 import com.japaneselearning.dto.request.RefreshTokenRequest;
 import com.japaneselearning.dto.request.RegisterRequest;
 import com.japaneselearning.dto.request.ResetPasswordRequest;
+import com.japaneselearning.dto.request.VerifyOtpRequest;
+import com.japaneselearning.dto.request.VerifyRegistrationRequest;
 import com.japaneselearning.dto.response.UserResponse;
 import com.japaneselearning.service.AuthService;
 import org.springframework.http.HttpHeaders;
@@ -30,8 +32,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
+        authService.register(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verify-registration")
+    public ResponseEntity<UserResponse> verifyRegistration(@Valid @RequestBody VerifyRegistrationRequest request) {
+        return ResponseEntity.ok(authService.verifyRegistration(request));
     }
 
     @PostMapping("/login")
@@ -64,6 +72,12 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Void> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        authService.verifyOtp(request);
         return ResponseEntity.ok().build();
     }
 

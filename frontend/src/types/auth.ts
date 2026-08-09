@@ -26,6 +26,16 @@ export interface ResetPasswordRequest {
   confirmPassword: string;
 }
 
+export interface VerifyOtpRequest {
+  email: string;
+  otp: string;
+}
+
+export interface VerifyRegistrationRequest {
+  email: string;
+  otp: string;
+}
+
 // ─── Response DTOs ────────────────────────────────────────────────────────────
 
 export interface UserResponse {

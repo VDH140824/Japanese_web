@@ -6,14 +6,29 @@ import type {
   RegisterRequest,
   ResetPasswordRequest,
   UserResponse,
+  VerifyOtpRequest,
+  VerifyRegistrationRequest,
 } from "../types/auth";
 
 /**
  * POST /api/auth/register
- * Registers a new user. Backend sends a verification email.
+ * Triggers sending registration verification OTP code to user email.
  */
-export async function register(payload: RegisterRequest): Promise<UserResponse> {
-  const { data } = await apiClient.post<UserResponse>("/auth/register", payload);
+export async function register(payload: RegisterRequest): Promise<void> {
+  await apiClient.post("/auth/register", payload);
+}
+
+/**
+ * POST /api/auth/verify-registration
+ * Verifies registration OTP and creates the user account in database.
+ */
+export async function verifyRegistration(
+  payload: VerifyRegistrationRequest,
+): Promise<UserResponse> {
+  const { data } = await apiClient.post<UserResponse>(
+    "/auth/verify-registration",
+    payload,
+  );
   return data;
 }
 
@@ -47,7 +62,7 @@ export async function logout(): Promise<void> {
 
 /**
  * POST /api/auth/forgot-password
- * Triggers a password-reset email.
+ * Triggers a password-reset OTP email.
  */
 export async function forgotPassword(
   payload: ForgotPasswordRequest,
@@ -56,8 +71,18 @@ export async function forgotPassword(
 }
 
 /**
+ * POST /api/auth/verify-otp
+ * Verifies the OTP code sent to the user's email.
+ */
+export async function verifyOtp(
+  payload: VerifyOtpRequest,
+): Promise<void> {
+  await apiClient.post("/auth/verify-otp", payload);
+}
+
+/**
  * POST /api/auth/reset-password
- * Resets the user's password using a token from the email link.
+ * Resets the user's password using the OTP token.
  */
 export async function resetPassword(
   payload: ResetPasswordRequest,

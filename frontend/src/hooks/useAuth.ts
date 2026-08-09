@@ -7,6 +7,8 @@ import type {
   LoginRequest,
   RegisterRequest,
   ResetPasswordRequest,
+  VerifyOtpRequest,
+  VerifyRegistrationRequest,
 } from "../types/auth";
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
@@ -63,12 +65,25 @@ export function useLogin() {
 
 // ─── useRegister ──────────────────────────────────────────────────────────────
 export function useRegister() {
+  return useMutation({
+    mutationFn: (payload: RegisterRequest) => authApi.register(payload),
+  });
+}
+
+// ─── useVerifyRegistration ─────────────────────────────────────────────────────
+export function useVerifyRegistration() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (payload: RegisterRequest) => authApi.register(payload),
-    onSuccess: () => {
-      navigate("/verify-email");
+    mutationFn: (payload: VerifyRegistrationRequest) => authApi.verifyRegistration(payload),
+    onSuccess: (data) => {
+      const accessToken = data.accessToken ?? "";
+      const refreshToken = data.refreshToken ?? undefined;
+      setAuth(data, accessToken, refreshToken);
+      queryClient.setQueryData(authKeys.me, data);
+      navigate("/home", { replace: true });
     },
   });
 }
@@ -95,6 +110,14 @@ export function useForgotPassword() {
   return useMutation({
     mutationFn: (payload: ForgotPasswordRequest) =>
       authApi.forgotPassword(payload),
+  });
+}
+
+// ─── useVerifyOtp ─────────────────────────────────────────────────────────────
+export function useVerifyOtp() {
+  return useMutation({
+    mutationFn: (payload: VerifyOtpRequest) =>
+      authApi.verifyOtp(payload),
   });
 }
 

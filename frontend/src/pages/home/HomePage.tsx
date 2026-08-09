@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import { useCurrentUser, useLogout } from "../../hooks/useAuth";
 import "./HomePage.css";
 
 export function HomePage() {
@@ -7,13 +9,18 @@ export function HomePage() {
   const [selectedJlpt, setSelectedJlpt] = useState<string>("N4");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // Retrieve user info from local storage if available or use default
+  const user = useAuthStore((s) => s.user);
+  useCurrentUser();
+  const { mutate: logout } = useLogout();
+
+  // Retrieve user info from store / local storage
   const token = localStorage.getItem("accessToken");
-  const userName = token ? "Học viên (User)" : "Khách";
+  const displayName = user?.username ?? "";
+  const userName = token ? (displayName ? `こんにちは, ${displayName}` : "こんにちは") : "Khách";
+  const avatarInitial = displayName ? displayName.charAt(0).toUpperCase() : "N";
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    navigate("/login", { replace: true });
+    logout();
   };
 
   const playAudioSample = () => {
@@ -82,10 +89,9 @@ export function HomePage() {
 
           <div className="user-profile-menu">
             <div className="user-badge">
-              <div className="user-avatar">N</div>
+              <div className="user-avatar">{avatarInitial}</div>
               <div className="user-info">
                 <span className="user-name">{userName}</span>
-                <span className="user-role">JLPT N4 Learner</span>
               </div>
             </div>
             <button type="button" className="logout-btn" onClick={handleLogout} title="Đăng xuất">
