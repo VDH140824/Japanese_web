@@ -1,0 +1,135 @@
+.video-upload-page {
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+  color: #0f172a;
+}
+
+.video-upload-card {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+}
+
+.video-upload-header h1 {
+  margin: 0;
+}
+
+.video-upload-kicker {
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  color: #2563eb;
+}
+
+.video-upload-subtitle {
+  color: #475569;
+}
+
+.video-upload-file-picker {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px dashed #94a3b8;
+  border-radius: 18px;
+}
+
+.video-upload-file-info,
+.video-upload-status,
+.video-upload-error,
+.video-upload-success {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+}
+
+.video-upload-file-info {
+  background: #f1f5f9;
+}
+
+.video-upload-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #eff6ff;
+}
+
+.video-upload-error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.video-upload-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.video-upload-preview {
+  margin-top: 1rem;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.video-upload-preview video {
+  width: 100%;
+  max-height: 420px;
+  display: block;
+}
+
+.video-upload-form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.video-upload-form-grid label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.video-upload-form-grid input,
+.video-upload-form-grid textarea,
+.video-upload-form-grid select {
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+}
+
+.video-upload-form-grid textarea {
+  grid-column: 1 / -1;
+  resize: vertical;
+}
+
+.video-upload-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.video-upload-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.2rem;
+  cursor: pointer;
+}
+
+.video-upload-actions button:last-child {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .video-upload-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,144 @@
+.video-moderation-page {
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.video-moderation-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.video-moderation-kicker {
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  color: #2563eb;
+}
+
+.video-moderation-header h1 {
+  margin: 0;
+}
+
+.video-moderation-header button,
+.video-moderation-actions button,
+.video-moderation-empty-state button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  cursor: pointer;
+}
+
+.video-moderation-header button,
+.video-moderation-empty-state button {
+  background: #0f172a;
+  color: #fff;
+}
+
+.video-moderation-success,
+.video-moderation-error {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+}
+
+.video-moderation-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.video-moderation-error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.video-moderation-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.video-moderation-card {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+}
+
+.video-moderation-preview {
+  width: 100%;
+  border-radius: 16px;
+  background: #000;
+}
+
+.video-moderation-body h2 {
+  margin: 0 0 0.5rem;
+}
+
+.video-moderation-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.video-moderation-meta dt {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.video-moderation-meta dd {
+  margin: 0.2rem 0 0;
+}
+
+.video-moderation-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.video-moderation-actions button:first-child {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+}
+
+.video-moderation-actions button:last-child {
+  background: linear-gradient(135deg, #dc2626, #f97316);
+  color: #fff;
+}
+
+.video-moderation-empty-state,
+.video-moderation-forbidden {
+  display: grid;
+  place-items: center;
+  min-height: 70vh;
+  text-align: center;
+}
+
+.video-moderation-empty-state {
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 900px) {
+  .video-moderation-card {
+    grid-template-columns: 1fr;
+  }
+
+  .video-moderation-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .video-moderation-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

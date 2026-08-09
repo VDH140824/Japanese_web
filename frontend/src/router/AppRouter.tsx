@@ -8,6 +8,9 @@ import { OAuth2RedirectPage } from "../pages/auth/OAuth2RedirectPage";
 import { HomePage } from "../pages/home/HomePage";
 import { BackgroundMusic } from "../components/ui/BackgroundMusic";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
+import { VideoEntertainmentPage } from "../pages/video/VideoEntertainmentPage";
+import { VideoModerationPage } from "../pages/video/VideoModerationPage";
+import { VideoUploadPage } from "../pages/video/VideoUploadPage";
 
 export function AppRouter() {
   return (
@@ -36,6 +39,30 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/videos"
+          element={
+            <ProtectedRoute>
+              <VideoEntertainmentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/videos/upload"
+          element={
+            <ProtectedRoute>
+              <VideoUploadPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/videos"
+          element={
+            <ProtectedRoute>
+              <VideoModerationPage />
             </ProtectedRoute>
           }
         />

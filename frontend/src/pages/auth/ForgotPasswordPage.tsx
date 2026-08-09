@@ -1,10 +1,20 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthButton, AuthShell, EmailIcon, LockIcon, TextField } from "../../components/ui/auth";
-import { useForgotPassword, useVerifyOtp, useResetPassword } from "../../hooks/useAuth";
+import {
+  AuthButton,
+  AuthShell,
+  EmailIcon,
+  LockIcon,
+  TextField,
+} from "../../components/ui/auth";
+import {
+  useForgotPassword,
+  useVerifyOtp,
+  useResetPassword,
+} from "../../hooks/useAuth";
 
 // ─── Step 1: Enter Email ──────────────────────────────────────────────────────
 const emailSchema = z.object({
@@ -21,7 +31,10 @@ type OtpFormValues = z.infer<typeof otpSchema>;
 // ─── Step 3: New Password ─────────────────────────────────────────────────────
 const passwordSchema = z
   .object({
-    password: z.string().min(1, "Password is required").min(8, "Minimum 8 characters"),
+    password: z
+      .string()
+      .min(1, "Password is required")
+      .min(8, "Minimum 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((v) => v.password === v.confirmPassword, {
@@ -31,15 +44,27 @@ const passwordSchema = z
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export function ForgotPasswordPage() {
-  const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
 
   // Mutations
-  const { mutate: sendOtp, isPending: isSending, error: sendError } = useForgotPassword();
-  const { mutate: verifyOtp, isPending: isVerifying, error: verifyError } = useVerifyOtp();
-  const { mutate: resetPassword, isPending: isResetting, isSuccess: resetSuccess, error: resetError } = useResetPassword();
+  const {
+    mutate: sendOtp,
+    isPending: isSending,
+    error: sendError,
+  } = useForgotPassword();
+  const {
+    mutate: verifyOtp,
+    isPending: isVerifying,
+    error: verifyError,
+  } = useVerifyOtp();
+  const {
+    mutate: resetPassword,
+    isPending: isResetting,
+    isSuccess: resetSuccess,
+    error: resetError,
+  } = useResetPassword();
 
   // ─── Step 1 Form ──────────────────────────────────────────────────────────
   const emailForm = useForm<EmailFormValues>({
@@ -102,9 +127,18 @@ export function ForgotPasswordPage() {
 
   // ─── Step Titles ──────────────────────────────────────────────────────────
   const titles: Record<number, { title: string; desc: string }> = {
-    1: { title: "Forgot password 🔑", desc: "Enter your email and we'll send you a verification code." },
-    2: { title: "Verify OTP 📩", desc: `Enter the 6-digit code sent to ${email}` },
-    3: { title: "Reset password 🛡️", desc: "Create a strong new password for your account." },
+    1: {
+      title: "Forgot password 🔑",
+      desc: "Enter your email and we'll send you a verification code.",
+    },
+    2: {
+      title: "Verify OTP 📩",
+      desc: `Enter the 6-digit code sent to ${email}`,
+    },
+    3: {
+      title: "Reset password 🛡️",
+      desc: "Create a strong new password for your account.",
+    },
   };
 
   return (
@@ -112,7 +146,13 @@ export function ForgotPasswordPage() {
       title={titles[step].title}
       description={titles[step].desc}
       footer={
-        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(148,163,184,0.85)" }}>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: 14,
+            color: "rgba(148,163,184,0.85)",
+          }}
+        >
           Remembered your password?{" "}
           <Link to="/login" className="auth-link">
             Back to sign in
@@ -157,7 +197,9 @@ export function ForgotPasswordPage() {
             }}
           >
             <span style={{ fontSize: 18 }}>💡</span>
-            <span>We'll send a 6-digit verification code to your email address.</span>
+            <span>
+              We'll send a 6-digit verification code to your email address.
+            </span>
           </div>
 
           <TextField
@@ -174,7 +216,13 @@ export function ForgotPasswordPage() {
             {isSending ? "Sending..." : "Send verification code →"}
           </AuthButton>
 
-          <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: 12,
+              color: "rgba(100,116,139,0.8)",
+            }}
+          >
             🔒 OTP will be sent to your email via Gmail SMTP.
           </p>
         </form>
@@ -217,7 +265,10 @@ export function ForgotPasswordPage() {
             }}
           >
             <span style={{ fontSize: 18 }}>✅</span>
-            <span>A verification code has been sent to <strong>{email}</strong>. Check your inbox.</span>
+            <span>
+              A verification code has been sent to <strong>{email}</strong>.
+              Check your inbox.
+            </span>
           </div>
 
           <TextField
@@ -304,7 +355,10 @@ export function ForgotPasswordPage() {
             }}
           >
             <span style={{ fontSize: 18 }}>🔐</span>
-            <span>Use 8+ characters with a mix of letters, numbers and symbols for a strong password.</span>
+            <span>
+              Use 8+ characters with a mix of letters, numbers and symbols for a
+              strong password.
+            </span>
           </div>
 
           <TextField
@@ -331,7 +385,13 @@ export function ForgotPasswordPage() {
             {isResetting ? "Updating..." : "Update password →"}
           </AuthButton>
 
-          <p style={{ textAlign: "center", fontSize: 12, color: "rgba(100,116,139,0.8)" }}>
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: 12,
+              color: "rgba(100,116,139,0.8)",
+            }}
+          >
             🔒 Your password will be securely hashed.
           </p>
         </form>
