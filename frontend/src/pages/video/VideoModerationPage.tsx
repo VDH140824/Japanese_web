@@ -75,7 +75,7 @@ export function VideoModerationPage() {
     setError("");
     try {
       await videoApi.rejectVideo(videoId, {
-        rejectionReason: "Rejected by moderator",
+        reason: "Rejected by moderator",
       });
       setVideos((current) => current.filter((video) => video.id !== videoId));
       setMessage("Video rejected successfully.");

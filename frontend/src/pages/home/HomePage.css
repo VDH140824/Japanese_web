@@ -4,7 +4,11 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #0b132b 0%, #1c2541 40%, #0f172a 100%);
   color: #f8fafc;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -95,7 +99,8 @@
   transition: all 0.2s ease;
 }
 
-.nav-item-btn:hover, .nav-item-btn.active {
+.nav-item-btn:hover,
+.nav-item-btn.active {
   color: #38bdf8;
   background: rgba(56, 189, 248, 0.1);
 }
@@ -181,7 +186,11 @@
 /* Hero Section */
 .hero-section {
   position: relative;
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(14, 165, 233, 0.15) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(30, 58, 138, 0.4) 0%,
+    rgba(14, 165, 233, 0.15) 100%
+  );
   border: 1px solid rgba(56, 189, 248, 0.2);
   border-radius: 24px;
   padding: 36px 40px;
@@ -199,7 +208,11 @@
   right: -100px;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.25) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
   pointer-events: none;
 }
 
@@ -462,7 +475,11 @@
 }
 
 .feature-card {
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.7) 0%,
+    rgba(15, 23, 42, 0.9) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 28px;
@@ -483,7 +500,7 @@
 }
 
 .feature-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -558,7 +575,11 @@
 
 /* Word of the Day Card */
 .word-of-day-card {
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(244, 63, 94, 0.12) 0%,
+    rgba(30, 41, 59, 0.8) 100%
+  );
   border: 1px solid rgba(244, 63, 94, 0.25);
   border-radius: 20px;
   padding: 28px;
@@ -596,7 +617,7 @@
   font-size: 3rem;
   font-weight: 800;
   color: #ffffff;
-  font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif;
+  font-family: "Yu Gothic", "Hiragino Sans", sans-serif;
   line-height: 1;
 }
 

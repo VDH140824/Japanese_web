@@ -1,15 +1,18 @@
 package com.japaneselearning.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 
 public class UserResponse {
 
-    private Long userId;
+    private Long id;
     private String username;
     private String email;
     private String avatarUrl;
     private String status;
     private Boolean emailVerified;
+    private String role;
     private LocalDateTime lastLogin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -20,8 +23,8 @@ public class UserResponse {
     public UserResponse() {
     }
 
-    public UserResponse(Long userId, String username, String email, String avatarUrl, String status, Boolean emailVerified, LocalDateTime lastLogin, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.userId = userId;
+    public UserResponse(Long id, String username, String email, String avatarUrl, String status, Boolean emailVerified, LocalDateTime lastLogin, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.avatarUrl = avatarUrl;
@@ -32,12 +35,22 @@ public class UserResponse {
         this.updatedAt = updatedAt;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @JsonIgnore
+    public Long getUserId() {
+        return id;
+    }
+
+    @JsonIgnore
     public void setUserId(Long userId) {
-        this.userId = userId;
+        this.id = userId;
     }
 
     public String getUsername() {
@@ -78,6 +91,14 @@ public class UserResponse {
 
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public LocalDateTime getLastLogin() {

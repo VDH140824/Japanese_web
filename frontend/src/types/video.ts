@@ -96,5 +96,5 @@ export interface VideoUploadRequest {
 }
 
 export interface VideoModerationRequest {
-  rejectionReason?: string;
+  reason?: string;
 }

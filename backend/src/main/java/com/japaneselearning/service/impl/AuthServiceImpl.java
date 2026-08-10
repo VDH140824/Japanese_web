@@ -306,12 +306,13 @@ public class AuthServiceImpl implements AuthService {
 
     private UserResponse mapToUserResponse(User user) {
         UserResponse response = new UserResponse();
-        response.setUserId(user.getUserId());
+        response.setId(user.getUserId());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         response.setAvatarUrl(user.getAvatarUrl());
         response.setStatus(user.getStatus() != null ? user.getStatus().name() : "ACTIVE");
         response.setEmailVerified(user.getEmailVerified());
+        response.setRole(user.getRole() != null ? user.getRole().getRoleName() : null);
         response.setLastLogin(user.getLastLogin());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
