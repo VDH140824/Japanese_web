@@ -47,9 +47,9 @@ spring:
               - profile
 
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME}
-  api-key: ${CLOUDINARY_API_KEY}
-  api-secret: ${CLOUDINARY_API_SECRET}
+  cloud-name: keticbsk
+  api-key: 783866647651171
+  api-secret: dwBfbS4euFzKILrkP3g7y7sWkbM
 
 server:
   port: 8080

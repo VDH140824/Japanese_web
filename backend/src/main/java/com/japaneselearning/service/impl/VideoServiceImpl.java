@@ -94,11 +94,13 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public VideoResponse uploadVideo(Principal principal, MultipartFile file, String title, String description, String category) {
-        User user = requireCurrentUser(principal);
-        validateUpload(file, title, category);
 
-        VideoCategory videoCategory = videoCategoryRepository.findByCategoryName(category.trim())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+    User user = requireCurrentUser(principal);
+
+    validateUpload(file, title, category);
+
+    VideoCategory videoCategory = videoCategoryRepository.findByCategoryName(category.trim())
+            .orElseThrow(() -> new IllegalArgumentException("Category not found"));
 
         CloudinaryUploadResponse uploadResponse = cloudinaryService.uploadVideo(file);
 
@@ -338,12 +340,48 @@ public class VideoServiceImpl implements VideoService {
     }
 
     private User requireCurrentUser(Principal principal) {
-        if (principal == null || principal.getName() == null || principal.getName().isBlank()) {
-            throw new IllegalArgumentException("Authenticated user is required");
-        }
-        return userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
+
+    System.out.println("========== FIND CURRENT USER ==========");
+
+    if (principal == null) {
+        throw new IllegalArgumentException("Authenticated user is required");
     }
+
+    System.out.println("Principal class: " + principal.getClass().getName());
+    System.out.println("Principal name: " + principal.getName());
+
+    // Google OAuth2 login
+    if (principal instanceof org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken oauth2Token) {
+
+        Object emailAttribute = oauth2Token.getPrincipal().getAttributes().get("email");
+
+        System.out.println("OAuth2 email: " + emailAttribute);
+
+        if (emailAttribute != null) {
+            User user = userRepository.findByEmail(emailAttribute.toString())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Authenticated Google user not found: " + emailAttribute
+                    ));
+
+            System.out.println("User found by Google email: " + user.getUsername());
+            System.out.println("User ID: " + user.getUserId());
+
+            return user;
+        }
+    }
+
+    // Email/password login
+    User user = userRepository.findByUsername(principal.getName())
+            .orElseGet(() -> userRepository.findByEmail(principal.getName())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Authenticated user not found: " + principal.getName()
+                    )));
+
+    System.out.println("User found: " + user.getUsername());
+    System.out.println("User ID: " + user.getUserId());
+
+    return user;
+}
 
     private Video requireApprovedVideo(Long videoId) {
         return videoRepository.findById(videoId)

@@ -21,6 +21,7 @@ export function HomePage() {
       : "こんにちは"
     : "Khách";
   const avatarInitial = displayName ? displayName.charAt(0).toUpperCase() : "N";
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
 
   const handleLogout = () => {
     logout();
@@ -93,6 +94,13 @@ export function HomePage() {
                 <span>🎯</span> Video
               </Link>
             </li>
+            {isAdmin && (
+              <li>
+                <Link to="/admin/videos" className="nav-item-btn">
+                  <span>✅</span> Duyệt video
+                </Link>
+              </li>
+            )}
           </ul>
 
           <div className="user-profile-menu">

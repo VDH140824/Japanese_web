@@ -51,11 +51,10 @@ export const videoApi = {
 
   uploadVideo: async (payload: VideoUploadRequest) => {
     const formData = buildVideoFormData(payload);
-    const { data } = await apiClient.post<VideoResponse>("/videos", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+
+    // Let the browser set the multipart boundary automatically.
+    // Overriding Content-Type here can break multipart uploads.
+    const { data } = await apiClient.post<VideoResponse>("/videos", formData);
     return data;
   },
 

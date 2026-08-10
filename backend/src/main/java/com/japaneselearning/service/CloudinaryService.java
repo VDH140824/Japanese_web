@@ -33,24 +33,38 @@ public class CloudinaryService {
     }
 
     public CloudinaryUploadResponse uploadVideo(MultipartFile file) {
+        System.out.println("========== CLOUDINARY UPLOAD START ==========");
+    System.out.println("File: " + (file != null ? file.getOriginalFilename() : "NULL"));
+    System.out.println("Size: " + (file != null ? file.getSize() : -1));
+    System.out.println("Content type: " + (file != null ? file.getContentType() : "NULL"));
         validateVideoFile(file);
+        System.out.println("Cloudinary validation passed");
 
         Path tempFile = null;
         try {
             String suffix = resolveSuffix(file.getOriginalFilename(), file.getContentType());
             tempFile = Files.createTempFile("video-upload-", suffix);
             file.transferTo(tempFile);
+            System.out.println("Temporary file created: " + tempFile);
+System.out.println("Temporary file size: " + Files.size(tempFile));
+System.out.println("Calling Cloudinary uploadLarge...");
 
             @SuppressWarnings("unchecked")
             Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader().uploadLarge(
                     tempFile.toFile(),
                     ObjectUtils.asMap(
                             "resource_type", "video",
-                            "asset_folder", TARGET_ASSET_FOLDER,
+                            "folder", TARGET_ASSET_FOLDER,
                             "use_filename", true,
-                            "unique_filename", false
+                            "unique_filename", false,
+                            "overwrite", false
                     )
             );
+            System.out.println("========== CLOUDINARY UPLOAD SUCCESS ==========");
+System.out.println("Secure URL: " + uploadResult.get("secure_url"));
+System.out.println("Public ID: " + uploadResult.get("public_id"));
+System.out.println("Resource type: " + uploadResult.get("resource_type"));
+System.out.println("Format: " + uploadResult.get("format"));
 
             return new CloudinaryUploadResponse(
                     asString(uploadResult.get("secure_url")),
@@ -62,8 +76,14 @@ public class CloudinaryService {
                     asInteger(uploadResult.get("height")),
                     buildThumbnailUrl(uploadResult)
             );
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to upload video to Cloudinary", e);
+        } catch (Exception e) {
+            System.out.println("========== CLOUDINARY UPLOAD FAILED ==========");
+    e.printStackTrace();
+
+    throw new IllegalStateException(
+        "Failed to upload video to Cloudinary",
+        e
+    );
         } finally {
             if (tempFile != null) {
                 try {

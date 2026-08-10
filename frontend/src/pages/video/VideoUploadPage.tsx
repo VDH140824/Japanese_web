@@ -269,6 +269,13 @@ export function VideoUploadPage() {
                 <button
                   type="button"
                   className="video-upload-secondary-btn"
+                  onClick={() => navigate("/")}
+                >
+                  Back Home
+                </button>
+                <button
+                  type="button"
+                  className="video-upload-secondary-btn"
                   onClick={() => navigate("/videos")}
                 >
                   Back to Video Entertainment
@@ -367,6 +374,13 @@ export function VideoUploadPage() {
               )}
 
               <div className="video-upload-actions">
+                <button
+                  type="button"
+                  className="video-upload-secondary-btn"
+                  onClick={() => navigate("/")}
+                >
+                  Back Home
+                </button>
                 <button
                   type="button"
                   className="video-upload-secondary-btn"
