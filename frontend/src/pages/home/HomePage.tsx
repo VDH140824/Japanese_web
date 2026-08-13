@@ -21,7 +21,13 @@ export function HomePage() {
       : "こんにちは"
     : "Khách";
   const avatarInitial = displayName ? displayName.charAt(0).toUpperCase() : "N";
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+
+  const normalizedRole = user?.role?.trim().toUpperCase();
+  const normalizedRoleId = String(user?.roleId ?? "");
+  const isAdmin =
+    normalizedRoleId === "1" ||
+    normalizedRole === "ADMIN" ||
+    normalizedRole === "ROLE_ADMIN";
 
   const handleLogout = () => {
     logout();

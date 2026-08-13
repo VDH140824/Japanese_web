@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class UserResponse {
 
     private Long id;
+    private Long roleId;
     private String username;
     private String email;
     private String avatarUrl;
@@ -41,6 +42,14 @@ public class UserResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 
     @JsonIgnore
@@ -142,4 +151,3 @@ public class UserResponse {
         this.refreshToken = refreshToken;
     }
 }
-

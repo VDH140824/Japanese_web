@@ -71,7 +71,7 @@ export function useLogin() {
       const accessToken = data.accessToken ?? "";
       const refreshToken = data.refreshToken ?? undefined;
       setAuth(data, accessToken, refreshToken);
-      queryClient.setQueryData(authKeys.me, data);
+      queryClient.invalidateQueries({ queryKey: authKeys.me });
       // Redirect to the page the user was originally trying to access, or /home
       const from =
         (location.state as { from?: { pathname: string } })?.from?.pathname ??
@@ -101,7 +101,7 @@ export function useVerifyRegistration() {
       const accessToken = data.accessToken ?? "";
       const refreshToken = data.refreshToken ?? undefined;
       setAuth(data, accessToken, refreshToken);
-      queryClient.setQueryData(authKeys.me, data);
+      queryClient.invalidateQueries({ queryKey: authKeys.me });
       navigate("/home", { replace: true });
     },
   });

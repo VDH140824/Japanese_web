@@ -40,9 +40,10 @@ export interface VerifyRegistrationRequest {
 
 export interface UserResponse {
   id: number;
+  roleId?: number | null;
   username: string;
   email: string;
-  role: string;
+  role?: string | null;
   emailVerified: boolean;
   avatarUrl?: string;
   accessToken?: string;
@@ -58,7 +59,11 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 
-  setAuth: (user: UserResponse, accessToken: string, refreshToken?: string) => void;
+  setAuth: (
+    user: UserResponse,
+    accessToken: string,
+    refreshToken?: string,
+  ) => void;
   setTokens: (accessToken: string, refreshToken?: string) => void;
   clearAuth: () => void;
   setLoading: (loading: boolean) => void;

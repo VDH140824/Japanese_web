@@ -16,13 +16,20 @@ export function VideoModerationPage() {
   const [processingIds, setProcessingIds] = useState<Set<number>>(new Set());
 
   // Reject modal state
-  const [rejectModalVideoId, setRejectModalVideoId] = useState<number | null>(null);
+  const [rejectModalVideoId, setRejectModalVideoId] = useState<number | null>(
+    null,
+  );
   const [rejectReason, setRejectReason] = useState("");
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
+  const normalizedRole = user?.role?.trim().toUpperCase();
+  const normalizedRoleId = String(user?.roleId ?? "");
   const isAdmin =
-    user?.role?.toUpperCase() === "ADMIN" ||
-    user?.role?.toUpperCase() === "MODERATOR";
+    normalizedRoleId === "1" ||
+    normalizedRole === "ADMIN" ||
+    normalizedRole === "ROLE_ADMIN" ||
+    normalizedRole === "MODERATOR" ||
+    normalizedRole === "ROLE_MODERATOR";
 
   useEffect(() => {
     let mounted = true;
@@ -136,7 +143,9 @@ export function VideoModerationPage() {
       <header className="vmod-header">
         <div className="vmod-header-left">
           <div className="vmod-header-kicker">
-            <span className="vmod-admin-badge">👑 {user?.role?.toUpperCase()}</span>
+            <span className="vmod-admin-badge">
+              👑 {user?.role?.toUpperCase()}
+            </span>
             <span className="vmod-kicker-text">Video Moderation</span>
           </div>
           <h1>Pending Videos Queue</h1>
@@ -245,19 +254,14 @@ export function VideoModerationPage() {
 
       {/* Reject modal */}
       {rejectModalVideoId !== null && (
-        <div
-          className="vmod-modal-overlay"
-          onClick={handleCloseRejectModal}
-        >
-          <div
-            className="vmod-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="vmod-modal-overlay" onClick={handleCloseRejectModal}>
+          <div className="vmod-modal" onClick={(e) => e.stopPropagation()}>
             <div className="vmod-modal-header">
               <span className="vmod-modal-icon">❌</span>
               <h2>Reject Video</h2>
               <p>
-                Provide a reason so the uploader knows why their video was rejected.
+                Provide a reason so the uploader knows why their video was
+                rejected.
               </p>
             </div>
 
