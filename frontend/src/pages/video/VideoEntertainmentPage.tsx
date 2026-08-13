@@ -15,6 +15,10 @@ function isPrivilegedRole(role?: string | null) {
   return role?.toUpperCase() === "ADMIN" || role?.toUpperCase() === "MODERATOR";
 }
 
+function isAdminRole(role?: string | null) {
+  return role?.toUpperCase() === "ADMIN";
+}
+
 function formatDateTime(value?: string | null) {
   if (!value) return "Unknown";
   try {
@@ -39,14 +43,11 @@ export function VideoEntertainmentPage() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [muted, setMuted] = useState(true);
-  const [requestedRelatedId, setRequestedRelatedId] = useState<number | null>(
-    null,
-  );
+  const [requestedRelatedId, setRequestedRelatedId] = useState<number | null>(null);
   const [viewedVideoIds, setViewedVideoIds] = useState<Set<number>>(new Set());
   const [likingIds, setLikingIds] = useState<Set<number>>(new Set());
-  const [deletingVideoIds, setDeletingVideoIds] = useState<Set<number>>(
-    new Set(),
-  );
+  const [deletingVideoIds, setDeletingVideoIds] = useState<Set<number>>(new Set());
+  const [moderatingIds, setModeratingIds] = useState<Set<number>>(new Set());
   const [commentsVideoId, setCommentsVideoId] = useState<number | null>(null);
   const [comments, setComments] = useState<VideoCommentResponse[]>([]);
   const [commentsPage, setCommentsPage] = useState(0);
@@ -55,9 +56,13 @@ export function VideoEntertainmentPage() {
   const [commentsError, setCommentsError] = useState<string | null>(null);
   const [commentDraft, setCommentDraft] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
-  const [deletingCommentIds, setDeletingCommentIds] = useState<Set<number>>(
-    new Set(),
-  );
+  const [deletingCommentIds, setDeletingCommentIds] = useState<Set<number>>(new Set());
+
+  // Reject modal state
+  const [rejectModalVideoId, setRejectModalVideoId] = useState<number | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
+
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Array<HTMLElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -73,6 +78,7 @@ export function VideoEntertainmentPage() {
   );
 
   const canModerate = isPrivilegedRole(user?.role);
+  const isAdmin = isAdminRole(user?.role);
 
   useEffect(() => {
     let mounted = true;
@@ -146,10 +152,7 @@ export function VideoEntertainmentPage() {
     let cancelled = false;
     const loadRelated = async () => {
       try {
-        const related = await videoApi.getRelatedVideos(
-          activeVideo.id,
-          RELATED_SIZE,
-        );
+        const related = await videoApi.getRelatedVideos(activeVideo.id, RELATED_SIZE);
         if (cancelled) return;
         setRequestedRelatedId(activeVideo.id);
 
@@ -196,10 +199,7 @@ export function VideoEntertainmentPage() {
           const index = Number(
             (entry.target as HTMLElement).dataset.index ?? -1,
           );
-          if (
-            entry.isIntersecting &&
-            entry.intersectionRatio >= ACTIVE_THRESHOLD
-          ) {
+          if (entry.isIntersecting && entry.intersectionRatio >= ACTIVE_THRESHOLD) {
             if (index >= 0) {
               setActiveIndex(index);
             }
@@ -480,6 +480,54 @@ export function VideoEntertainmentPage() {
     }
   };
 
+  const handleApproveVideo = async (videoId: number) => {
+    if (moderatingIds.has(videoId)) return;
+    setModeratingIds((current) => new Set(current).add(videoId));
+    try {
+      await videoApi.approveVideo(videoId);
+      updateVideo(videoId, (v) => ({ ...v, status: "APPROVED" }));
+      setError(null);
+    } catch {
+      setError("Unable to approve video.");
+    } finally {
+      setModeratingIds((current) => {
+        const next = new Set(current);
+        next.delete(videoId);
+        return next;
+      });
+    }
+  };
+
+  const handleOpenRejectModal = (videoId: number) => {
+    setRejectModalVideoId(videoId);
+    setRejectReason("");
+  };
+
+  const handleCloseRejectModal = () => {
+    setRejectModalVideoId(null);
+    setRejectReason("");
+  };
+
+  const handleConfirmReject = async () => {
+    if (!rejectModalVideoId) return;
+    setRejectSubmitting(true);
+    try {
+      await videoApi.rejectVideo(rejectModalVideoId, {
+        reason: rejectReason.trim() || "Rejected by admin",
+      });
+      updateVideo(rejectModalVideoId, (v) => ({
+        ...v,
+        status: "REJECTED",
+        rejectionReason: rejectReason.trim() || "Rejected by admin",
+      }));
+      handleCloseRejectModal();
+    } catch {
+      setError("Unable to reject video.");
+    } finally {
+      setRejectSubmitting(false);
+    }
+  };
+
   const canDeleteVideo = (video: VideoResponse) =>
     canModerate || (user?.id != null && video.uploader?.id === user.id);
 
@@ -504,6 +552,7 @@ export function VideoEntertainmentPage() {
     return (
       <div className="video-entertainment-page video-entertainment-loading">
         <div className="video-entertainment-empty-state">
+          <div className="video-entertainment-loading-spinner" />
           <h1>Loading videos...</h1>
           <p>Please wait while we prepare your feed.</p>
         </div>
@@ -544,12 +593,39 @@ export function VideoEntertainmentPage() {
   return (
     <div className="video-entertainment-page">
       <header className="video-entertainment-header">
-        <div>
+        <div className="video-entertainment-header-left">
           <p className="video-entertainment-kicker">Video Entertainment</p>
           <h1>Discover and share entertaining videos</h1>
         </div>
 
         <div className="video-entertainment-header-actions">
+          {/* Admin role badge + moderation button */}
+          {isAdmin && (
+            <div className="video-admin-controls">
+              <span className="video-admin-role-badge">
+                👑 <strong>ADMIN</strong>
+              </span>
+              <button
+                type="button"
+                className="video-moderation-nav-btn"
+                onClick={() => navigate("/admin/videos")}
+                aria-label="Review pending videos"
+              >
+                <span>🛡️</span>
+                <span>Review Videos</span>
+              </button>
+            </div>
+          )}
+          {!isAdmin && canModerate && (
+            <button
+              type="button"
+              className="video-moderation-nav-btn"
+              onClick={() => navigate("/admin/videos")}
+            >
+              <span>🛡️</span>
+              <span>Moderate</span>
+            </button>
+          )}
           <button
             type="button"
             className="video-entertainment-upload-btn"
@@ -580,10 +656,14 @@ export function VideoEntertainmentPage() {
               onToggleLike={() => void handleToggleLike(video)}
               onToggleComments={() => handleToggleComments(video.id)}
               onDelete={() => void handleDeleteVideo(video.id)}
+              onApprove={() => void handleApproveVideo(video.id)}
+              onReject={() => handleOpenRejectModal(video.id)}
               commentsOpen={commentsVideoId === video.id}
               isLiking={likingIds.has(video.id)}
               isDeleting={deletingVideoIds.has(video.id)}
               canDelete={canDeleteVideo(video)}
+              canModerate={canModerate}
+              isAdmin={isAdmin}
               onPlayStateChange={(isPlaying) => {
                 if (!isPlaying && index === activeIndex && videos[index + 1]) {
                   // no-op; state is driven by IntersectionObserver
@@ -600,6 +680,7 @@ export function VideoEntertainmentPage() {
         ))}
       </div>
 
+      {/* Comments panel */}
       {commentsVideoId && activeCommentsVideo && (
         <aside className="video-comments-panel" aria-label="Video comments">
           <div className="video-comments-header">
@@ -655,7 +736,7 @@ export function VideoEntertainmentPage() {
             ))}
 
             {!commentsLoading && comments.length === 0 && (
-              <div className="video-comments-empty">No comments yet.</div>
+              <div className="video-comments-empty">No comments yet. Be the first! 💬</div>
             )}
 
             {commentsLoading && (
@@ -676,21 +757,77 @@ export function VideoEntertainmentPage() {
           </div>
 
           <div className="video-comment-compose">
-            <textarea
-              value={commentDraft}
-              placeholder="Write a comment..."
-              onChange={(event) => setCommentDraft(event.target.value)}
-              rows={3}
-            />
-            <button
-              type="button"
-              onClick={() => void handleSubmitComment()}
-              disabled={commentSubmitting || !commentDraft.trim()}
-            >
-              {commentSubmitting ? "Posting..." : "Post"}
-            </button>
+            <div className="video-comment-compose-avatar">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt="" />
+              ) : (
+                <span>{user.username.slice(0, 1).toUpperCase()}</span>
+              )}
+            </div>
+            <div className="video-comment-compose-input-row">
+              <textarea
+                value={commentDraft}
+                placeholder="Add a comment..."
+                onChange={(event) => setCommentDraft(event.target.value)}
+                rows={2}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void handleSubmitComment();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => void handleSubmitComment()}
+                disabled={commentSubmitting || !commentDraft.trim()}
+              >
+                {commentSubmitting ? "..." : "➤"}
+              </button>
+            </div>
           </div>
         </aside>
+      )}
+
+      {/* Reject reason modal */}
+      {rejectModalVideoId !== null && (
+        <div className="video-reject-modal-overlay" onClick={handleCloseRejectModal}>
+          <div
+            className="video-reject-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="video-reject-modal-header">
+              <span className="video-reject-modal-icon">❌</span>
+              <h2>Reject Video</h2>
+              <p>Provide a reason for rejection (optional)</p>
+            </div>
+            <textarea
+              className="video-reject-reason-input"
+              placeholder="e.g. Inappropriate content, off-topic, low quality..."
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              rows={4}
+            />
+            <div className="video-reject-modal-actions">
+              <button
+                type="button"
+                className="video-reject-cancel-btn"
+                onClick={handleCloseRejectModal}
+                disabled={rejectSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="video-reject-confirm-btn"
+                onClick={() => void handleConfirmReject()}
+                disabled={rejectSubmitting}
+              >
+                {rejectSubmitting ? "Rejecting..." : "Confirm Reject"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <button

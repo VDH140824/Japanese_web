@@ -10,10 +10,14 @@ interface VideoPlayerProps {
   onToggleLike?: () => void;
   onToggleComments?: () => void;
   onDelete?: () => void;
+  onApprove?: () => void;
+  onReject?: () => void;
   commentsOpen?: boolean;
   isLiking?: boolean;
   isDeleting?: boolean;
   canDelete?: boolean;
+  canModerate?: boolean;
+  isAdmin?: boolean;
   className?: string;
 }
 
@@ -26,10 +30,14 @@ export function VideoPlayer({
   onToggleLike,
   onToggleComments,
   onDelete,
+  onApprove,
+  onReject,
   commentsOpen = false,
   isLiking = false,
   isDeleting = false,
   canDelete = false,
+  canModerate = false,
+  isAdmin = false,
   className,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -52,7 +60,6 @@ export function VideoPlayer({
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-
     el.muted = muted;
   }, [muted]);
 
@@ -118,6 +125,9 @@ export function VideoPlayer({
     }
   };
 
+  const likeCount = typeof video.likeCount === "number" ? video.likeCount : 0;
+  const isLiked = Boolean(video.likedByCurrentUser);
+
   return (
     <div className={className ?? "video-player-shell"}>
       <video
@@ -143,37 +153,154 @@ export function VideoPlayer({
         }}
       />
 
-      <div className="video-player-overlay">
-        <div className="video-player-top-row">
-          <button
-            type="button"
-            className="video-control-btn"
-            onClick={onToggleMuted}
-            aria-label={muted ? "Unmute" : "Mute"}
-          >
-            {muted ? "🔇" : "🔊"}
-          </button>
+      {/* Click to play/pause overlay */}
+      <button
+        type="button"
+        className="video-player-click-zone"
+        onClick={togglePlay}
+        aria-label={isPlaying ? "Pause video" : "Play video"}
+      />
 
-          <button
-            type="button"
-            className="video-control-btn"
-            onClick={togglePlay}
-            aria-label={isPlaying ? "Pause video" : "Play video"}
-          >
-            {isPlaying ? "⏸" : "▶"}
-          </button>
+      <div className="video-player-overlay">
+        {/* Top controls */}
+        <div className="video-player-top-row">
+          {isAdmin && (
+            <span className="video-player-admin-badge">
+              👑 ADMIN
+            </span>
+          )}
+          <div className="video-player-top-controls">
+            <button
+              type="button"
+              className="video-control-btn"
+              onClick={onToggleMuted}
+              aria-label={muted ? "Unmute" : "Mute"}
+            >
+              {muted ? "🔇" : "🔊"}
+            </button>
+
+            <button
+              type="button"
+              className="video-control-btn"
+              onClick={togglePlay}
+              aria-label={isPlaying ? "Pause video" : "Play video"}
+            >
+              {isPlaying ? "⏸" : "▶"}
+            </button>
+          </div>
         </div>
 
+        {/* Right sidebar actions (TikTok style) */}
+        <div className="video-player-sidebar-actions">
+          {/* Uploader avatar */}
+          <div className="video-sidebar-uploader">
+            <div className="video-sidebar-avatar">
+              {video.uploader?.avatarUrl ? (
+                <img src={video.uploader.avatarUrl} alt="" />
+              ) : (
+                <span>
+                  {(video.uploader?.username ?? "U").slice(0, 1).toUpperCase()}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Like button */}
+          <button
+            type="button"
+            className={`video-sidebar-btn ${isLiked ? "liked" : ""}`}
+            onClick={onToggleLike}
+            disabled={isLiking}
+            aria-label={isLiked ? "Unlike" : "Like"}
+          >
+            <span className="video-sidebar-icon">
+              {isLiked ? "❤️" : "🤍"}
+            </span>
+            <span className="video-sidebar-label">
+              {likeCount > 999 ? `${(likeCount / 1000).toFixed(1)}K` : likeCount}
+            </span>
+          </button>
+
+          {/* Comment button */}
+          <button
+            type="button"
+            className={`video-sidebar-btn ${commentsOpen ? "active" : ""}`}
+            onClick={onToggleComments}
+            aria-label="Comments"
+          >
+            <span className="video-sidebar-icon">💬</span>
+            <span className="video-sidebar-label">Comment</span>
+          </button>
+
+          {/* Delete button */}
+          {canDelete && (
+            <button
+              type="button"
+              className="video-sidebar-btn danger"
+              onClick={onDelete}
+              disabled={isDeleting}
+              aria-label="Delete video"
+            >
+              <span className="video-sidebar-icon">🗑️</span>
+              <span className="video-sidebar-label">
+                {isDeleting ? "..." : "Delete"}
+              </span>
+            </button>
+          )}
+
+          {/* Admin moderation buttons */}
+          {canModerate && video.status === "PENDING" && (
+            <>
+              <button
+                type="button"
+                className="video-sidebar-btn approve"
+                onClick={onApprove}
+                aria-label="Approve video"
+              >
+                <span className="video-sidebar-icon">✅</span>
+                <span className="video-sidebar-label">Approve</span>
+              </button>
+              <button
+                type="button"
+                className="video-sidebar-btn reject"
+                onClick={onReject}
+                aria-label="Reject video"
+              >
+                <span className="video-sidebar-icon">❌</span>
+                <span className="video-sidebar-label">Reject</span>
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Bottom info sheet */}
         <div className="video-player-bottom-sheet">
           <div className="video-player-metadata">
-            <div className="video-player-kicker">
-              <span>{video.category ?? "General"}</span>
-              {typeof video.viewCount === "number" && (
-                <span>{video.viewCount} views</span>
+            <div className="video-player-uploader-row">
+              <strong className="video-player-username">
+                @{video.uploader?.username ?? "Unknown"}
+              </strong>
+              {video.status && video.status !== "APPROVED" && (
+                <span
+                  className={`video-player-status-badge status-${video.status.toLowerCase()}`}
+                >
+                  {video.status}
+                </span>
               )}
             </div>
 
+            <div className="video-player-kicker">
+              <span>{video.category ?? "General"}</span>
+              {typeof video.viewCount === "number" && (
+                <span>
+                  👁 {video.viewCount > 999 ? `${(video.viewCount / 1000).toFixed(1)}K` : video.viewCount} views
+                </span>
+              )}
+              {video.createdAt && <span>🕐 {formattedDate}</span>}
+            </div>
+
             <h2 className="video-player-title">{video.title}</h2>
+
             {video.description ? (
               <p className="video-player-description">{video.description}</p>
             ) : (
@@ -181,53 +308,12 @@ export function VideoPlayer({
                 No description provided.
               </p>
             )}
-
-            <div className="video-player-meta-grid">
-              <span>
-                <strong>Uploader:</strong>{" "}
-                {video.uploader?.username ?? "Unknown"}
-              </span>
-              <span>
-                <strong>Created:</strong> {formattedDate || "Unknown"}
-              </span>
-            </div>
-
-            <div className="video-player-actions">
-              <button
-                type="button"
-                className={`video-action-btn ${video.likedByCurrentUser ? "active" : ""}`}
-                onClick={onToggleLike}
-                disabled={isLiking}
-              >
-                {video.likedByCurrentUser ? "♥" : "♡"}{" "}
-                {typeof video.likeCount === "number" ? video.likeCount : 0}
-              </button>
-
-              <button
-                type="button"
-                className={`video-action-btn ${commentsOpen ? "active" : ""}`}
-                onClick={onToggleComments}
-              >
-                💬 Comments
-              </button>
-
-              {canDelete && (
-                <button
-                  type="button"
-                  className="video-action-btn video-action-btn-danger"
-                  onClick={onDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </button>
-              )}
-            </div>
           </div>
         </div>
 
         {(isLoading || hasError) && (
           <div className="video-player-status">
-            {hasError ? "Unable to load video." : "Loading video..."}
+            {hasError ? "⚠️ Unable to load video." : "⏳ Loading..."}
           </div>
         )}
       </div>

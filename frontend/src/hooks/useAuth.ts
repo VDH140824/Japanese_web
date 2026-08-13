@@ -31,12 +31,23 @@ export function useCurrentUser() {
     queryFn: async () => {
       const user = await authApi.getCurrentUser();
 
-      // Keep the existing token state intact; only sync the user profile.
-      const token = accessToken ?? "";
+      // Debug: log what the server returns so we can verify role
+      console.log("[useCurrentUser] Server returned user:", user);
+      console.log("[useCurrentUser] role from server:", user.role);
+
+      const token = accessToken ?? useAuthStore.getState().accessToken ?? "";
       const refresh = useAuthStore.getState().refreshToken ?? undefined;
 
       if (token) {
-        setAuth(user, token, refresh);
+        // Merge: prefer server role, fallback to existing store role
+        const existingUser = useAuthStore.getState().user;
+        const mergedUser = {
+          ...existingUser,
+          ...user,
+          // Always prefer the server role if it exists; fallback to existing
+          role: user.role ?? existingUser?.role ?? null,
+        };
+        setAuth(mergedUser as typeof user, token, refresh);
       }
 
       return user;
