@@ -18,7 +18,7 @@ const loginSchema = z.object({
   password: z
     .string()
     .min(1, "Password is required")
-    .min(6, "Minimum 6 characters"),
+    .min(8, "Minimum 8 characters"),
   rememberMe: z.boolean().optional(),
 });
 

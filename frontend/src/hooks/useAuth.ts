@@ -46,6 +46,7 @@ export function useCurrentUser() {
           ...user,
           // Always prefer the server role if it exists; fallback to existing
           role: user.role ?? existingUser?.role ?? null,
+          roleId: user.roleId ?? existingUser?.roleId ?? null,
         };
         setAuth(mergedUser as typeof user, token, refresh);
       }

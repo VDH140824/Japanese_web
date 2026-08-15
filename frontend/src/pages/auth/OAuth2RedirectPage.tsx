@@ -20,13 +20,14 @@ export function OAuth2RedirectPage() {
       // Temporarily store the token so the Axios interceptor can attach it
       localStorage.setItem("accessToken", token);
 
+      const existingRole = useAuthStore.getState().user?.role;
       const fallbackUser: UserResponse | null =
         username && email
           ? {
               id: 0,
               username,
               email,
-              role: "USER",
+              role: existingRole ?? undefined,
               emailVerified: true,
             }
           : null;
