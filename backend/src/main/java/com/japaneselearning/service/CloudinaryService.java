@@ -106,6 +106,23 @@ System.out.println("Format: " + uploadResult.get("format"));
         }
     }
 
+    public String buildSecureVideoUrl(String publicId, String format) {
+        if (publicId == null || publicId.isBlank()) {
+            return null;
+        }
+
+        String normalizedFormat = (format == null || format.isBlank()) ? "mp4" : format;
+        return cloudinary.url()
+                .secure(true)
+                .resourceType("video")
+                .format(normalizedFormat)
+                .generate(publicId);
+    }
+
+    public String buildSecureVideoUrl(String publicId) {
+        return buildSecureVideoUrl(publicId, "mp4");
+    }
+
     private void validateVideoFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Video file is required");

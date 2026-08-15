@@ -109,7 +109,12 @@ public class VideoServiceImpl implements VideoService {
         video.setCategory(videoCategory);
         video.setTitle(title.trim());
         video.setDescription(description);
-        video.setVideoUrl(uploadResponse.getVideoUrl());
+        video.setVideoUrl(normalizePlayableVideoUrl(
+                uploadResponse.getVideoUrl(),
+                uploadResponse.getPublicId(),
+                uploadResponse.getResourceType(),
+                uploadResponse.getFormat()
+        ));
         video.setCloudinaryPublicId(uploadResponse.getPublicId());
         video.setThumbnailUrl(uploadResponse.getThumbnailUrl());
         video.setStatus(STATUS_PENDING);
@@ -454,7 +459,12 @@ public class VideoServiceImpl implements VideoService {
         response.setId(video.getVideoId());
         response.setTitle(video.getTitle());
         response.setDescription(video.getDescription());
-        response.setVideoUrl(video.getVideoUrl());
+        response.setVideoUrl(normalizePlayableVideoUrl(
+                video.getVideoUrl(),
+                video.getCloudinaryPublicId(),
+                "video",
+                null
+        ));
         response.setPublicId(video.getCloudinaryPublicId());
         response.setThumbnailUrl(video.getThumbnailUrl());
         response.setCategory(video.getCategory() != null ? video.getCategory().getCategoryName() : null);
@@ -490,5 +500,23 @@ public class VideoServiceImpl implements VideoService {
             return null;
         }
         return new VideoUserResponse(user.getUserId(), user.getUsername(), user.getAvatarUrl());
+    }
+
+    private String normalizePlayableVideoUrl(String storedUrl, String publicId, String resourceType, String format) {
+        if (storedUrl != null && storedUrl.startsWith("http")) {
+            return storedUrl;
+        }
+
+        if (publicId == null || publicId.isBlank()) {
+            return storedUrl;
+        }
+
+        String normalizedFormat = (format == null || format.isBlank()) ? "mp4" : format;
+        String playableUrl = cloudinaryService.buildSecureVideoUrl(publicId, normalizedFormat);
+        if (playableUrl != null && !playableUrl.isBlank()) {
+            return playableUrl;
+        }
+
+        return storedUrl;
     }
 }
