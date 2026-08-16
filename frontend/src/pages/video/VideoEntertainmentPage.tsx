@@ -43,10 +43,14 @@ export function VideoEntertainmentPage() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [muted, setMuted] = useState(true);
-  const [requestedRelatedId, setRequestedRelatedId] = useState<number | null>(null);
+  const [requestedRelatedId, setRequestedRelatedId] = useState<number | null>(
+    null,
+  );
   const [viewedVideoIds, setViewedVideoIds] = useState<Set<number>>(new Set());
   const [likingIds, setLikingIds] = useState<Set<number>>(new Set());
-  const [deletingVideoIds, setDeletingVideoIds] = useState<Set<number>>(new Set());
+  const [deletingVideoIds, setDeletingVideoIds] = useState<Set<number>>(
+    new Set(),
+  );
   const [moderatingIds, setModeratingIds] = useState<Set<number>>(new Set());
   const [commentsVideoId, setCommentsVideoId] = useState<number | null>(null);
   const [comments, setComments] = useState<VideoCommentResponse[]>([]);
@@ -56,10 +60,14 @@ export function VideoEntertainmentPage() {
   const [commentsError, setCommentsError] = useState<string | null>(null);
   const [commentDraft, setCommentDraft] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
-  const [deletingCommentIds, setDeletingCommentIds] = useState<Set<number>>(new Set());
+  const [deletingCommentIds, setDeletingCommentIds] = useState<Set<number>>(
+    new Set(),
+  );
 
   // Reject modal state
-  const [rejectModalVideoId, setRejectModalVideoId] = useState<number | null>(null);
+  const [rejectModalVideoId, setRejectModalVideoId] = useState<number | null>(
+    null,
+  );
   const [rejectReason, setRejectReason] = useState("");
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
@@ -152,7 +160,10 @@ export function VideoEntertainmentPage() {
     let cancelled = false;
     const loadRelated = async () => {
       try {
-        const related = await videoApi.getRelatedVideos(activeVideo.id, RELATED_SIZE);
+        const related = await videoApi.getRelatedVideos(
+          activeVideo.id,
+          RELATED_SIZE,
+        );
         if (cancelled) return;
         setRequestedRelatedId(activeVideo.id);
 
@@ -199,7 +210,10 @@ export function VideoEntertainmentPage() {
           const index = Number(
             (entry.target as HTMLElement).dataset.index ?? -1,
           );
-          if (entry.isIntersecting && entry.intersectionRatio >= ACTIVE_THRESHOLD) {
+          if (
+            entry.isIntersecting &&
+            entry.intersectionRatio >= ACTIVE_THRESHOLD
+          ) {
             if (index >= 0) {
               setActiveIndex(index);
             }
@@ -599,6 +613,15 @@ export function VideoEntertainmentPage() {
         </div>
 
         <div className="video-entertainment-header-actions">
+          <button
+            type="button"
+            className="video-entertainment-back-btn"
+            onClick={() => navigate("/home")}
+            aria-label="Back to homepage"
+          >
+            ← Back to Home
+          </button>
+
           {/* Admin role badge + moderation button */}
           {isAdmin && (
             <div className="video-admin-controls">
@@ -626,15 +649,6 @@ export function VideoEntertainmentPage() {
               <span>Moderate</span>
             </button>
           )}
-          <button
-            type="button"
-            className="video-entertainment-upload-btn"
-            onClick={() => navigate("/videos/upload")}
-            aria-label="Upload a video"
-          >
-            <span>+</span>
-            <span>Upload</span>
-          </button>
         </div>
       </header>
 
@@ -736,7 +750,9 @@ export function VideoEntertainmentPage() {
             ))}
 
             {!commentsLoading && comments.length === 0 && (
-              <div className="video-comments-empty">No comments yet. Be the first! 💬</div>
+              <div className="video-comments-empty">
+                No comments yet. Be the first! 💬
+              </div>
             )}
 
             {commentsLoading && (
@@ -791,7 +807,10 @@ export function VideoEntertainmentPage() {
 
       {/* Reject reason modal */}
       {rejectModalVideoId !== null && (
-        <div className="video-reject-modal-overlay" onClick={handleCloseRejectModal}>
+        <div
+          className="video-reject-modal-overlay"
+          onClick={handleCloseRejectModal}
+        >
           <div
             className="video-reject-modal"
             onClick={(e) => e.stopPropagation()}

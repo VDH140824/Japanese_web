@@ -5,7 +5,15 @@ const MUSIC_URL =
   "https://res.cloudinary.com/keticbsk/video/upload/v1785996208/Japanese_Music_Nh%E1%BA%A1c_Nh%E1%BA%ADt_B%E1%BA%A3n_Hay_Nh%E1%BA%A5t_Nh%E1%BA%A1c_Anime_Bu%E1%BB%93n_Nh%E1%BA%B9_Nh%C3%A0ng_om5uhw.mp3";
 
 /** Routes where background music should play */
-const MUSIC_ROUTES = ["/", "/home", "/login", "/register", "/forgot-password", "/reset-password", "/verify-email"];
+const MUSIC_ROUTES = [
+  "/",
+  "/home",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+];
 
 export function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -14,7 +22,10 @@ export function BackgroundMusic() {
   const [showVolume, setShowVolume] = useState(false);
   const location = useLocation();
 
-  const shouldPlay = MUSIC_ROUTES.includes(location.pathname);
+  const shouldPlay = MUSIC_ROUTES.some(
+    (route) =>
+      location.pathname === route || location.pathname.startsWith(`${route}/`),
+  );
 
   // Create audio el once
   useEffect(() => {
@@ -26,7 +37,10 @@ export function BackgroundMusic() {
     // Try autoplay on first user interaction
     const handleInteraction = () => {
       if (!audioRef.current) return;
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => {});
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("keydown", handleInteraction);
     };
@@ -66,7 +80,10 @@ export function BackgroundMusic() {
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => {});
     }
   };
 
@@ -203,7 +220,11 @@ export function BackgroundMusic() {
           onClick={toggle}
           onMouseEnter={() => setShowVolume(true)}
           onMouseLeave={() => setShowVolume(false)}
-          title={playing ? "Pause music • Scroll for volume" : "Play Japanese background music"}
+          title={
+            playing
+              ? "Pause music • Scroll for volume"
+              : "Play Japanese background music"
+          }
         >
           <span className={`bg-music-icon ${playing ? "playing" : ""}`}>
             {playing ? "🎵" : "🎶"}
