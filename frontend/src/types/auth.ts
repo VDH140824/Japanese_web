@@ -46,8 +46,24 @@ export interface UserResponse {
   role?: string | null;
   emailVerified: boolean;
   avatarUrl?: string;
+  status?: string | null;
+  lastLogin?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  birthday?: string | null;
+  country?: string | null;
+  nativeLanguage?: string | null;
+  bio?: string | null;
   accessToken?: string;
   refreshToken?: string;
+}
+
+export interface UpdateProfileRequest {
+  fullName?: string | null;
+  birthday?: string | null;
+  country?: string | null;
+  nativeLanguage?: string | null;
+  bio?: string | null;
 }
 
 // ─── Auth State ───────────────────────────────────────────────────────────────
@@ -64,7 +80,9 @@ export interface AuthState {
     accessToken: string,
     refreshToken?: string,
   ) => void;
+  setUser: (user: UserResponse | null) => void;
   setTokens: (accessToken: string, refreshToken?: string) => void;
   clearAuth: () => void;
   setLoading: (loading: boolean) => void;
 }
+

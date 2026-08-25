@@ -11,6 +11,7 @@ import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { VideoEntertainmentPage } from "../pages/video/VideoEntertainmentPage";
 import { VideoModerationPage } from "../pages/video/VideoModerationPage";
 import { VideoUploadPage } from "../pages/video/VideoUploadPage";
+import { ProfilePage } from "../pages/profile/ProfilePage";
 
 export function AppRouter() {
   return (
@@ -63,6 +64,14 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <VideoModerationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />

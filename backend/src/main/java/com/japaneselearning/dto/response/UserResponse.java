@@ -14,6 +14,10 @@ public class UserResponse {
     private String status;
     private Boolean emailVerified;
     private String role;
+    private java.time.LocalDate birthday;
+    private String country;
+    private String nativeLanguage;
+    private String bio;
     private LocalDateTime lastLogin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -104,6 +108,38 @@ public class UserResponse {
 
     public String getRole() {
         return role;
+    }
+
+    public java.time.LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(java.time.LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getNativeLanguage() {
+        return nativeLanguage;
+    }
+
+    public void setNativeLanguage(String nativeLanguage) {
+        this.nativeLanguage = nativeLanguage;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public void setRole(String role) {

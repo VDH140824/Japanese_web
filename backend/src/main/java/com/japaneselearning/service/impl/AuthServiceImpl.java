@@ -10,7 +10,9 @@ import com.japaneselearning.dto.request.UpdateProfileRequest;
 import com.japaneselearning.dto.request.VerifyOtpRequest;
 import com.japaneselearning.dto.request.VerifyRegistrationRequest;
 import com.japaneselearning.dto.response.UserResponse;
+import com.japaneselearning.entity.EmailVerification;
 import com.japaneselearning.entity.PasswordReset;
+import com.japaneselearning.entity.RefreshToken;
 import com.japaneselearning.entity.Role;
 import com.japaneselearning.entity.User;
 import com.japaneselearning.entity.UserProfile;
@@ -24,6 +26,10 @@ import com.japaneselearning.repository.UserRepository;
 import com.japaneselearning.security.JwtService;
 import com.japaneselearning.service.AuthService;
 import com.japaneselearning.service.EmailService;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -195,8 +201,34 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
+    @Transactional
     public UserResponse refreshToken(RefreshTokenRequest request) {
-        return null;
+        if (request == null || request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
+            throw new IllegalArgumentException("Refresh token is required");
+        }
+
+        RefreshToken storedToken = refreshTokenRepository.findByToken(request.getRefreshToken())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token"));
+
+        if (Boolean.TRUE.equals(storedToken.getRevoked())) {
+            throw new IllegalArgumentException("Invalid or expired refresh token");
+        }
+
+        if (storedToken.getExpiresAt() != null && storedToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            storedToken.setRevoked(true);
+            refreshTokenRepository.save(storedToken);
+            throw new IllegalArgumentException("Invalid or expired refresh token");
+        }
+
+        User user = storedToken.getUser();
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid or expired refresh token");
+        }
+
+        UserResponse response = mapToUserResponse(user);
+        response.setAccessToken(jwtService.generateToken(user.getUsername()));
+        response.setRefreshToken(storedToken.getToken());
+        return response;
     }
 
     @Override
@@ -265,15 +297,61 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void changePassword(ChangePasswordRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Invalid password change request");
+        }
+        if (request.getNewPassword() == null || !request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        User user = getAuthenticatedUser();
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 
     @Override
+    @Transactional
     public void logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+
+        refreshTokenRepository.findByToken(refreshToken).ifPresent(token -> {
+            token.setRevoked(true);
+            refreshTokenRepository.save(token);
+        });
     }
 
     @Override
+    @Transactional
     public void verifyEmail(String token) {
+        if (token == null || token.isBlank()) {
+            throw new IllegalArgumentException("Verification token is required");
+        }
+
+        EmailVerification emailVerification = emailVerificationRepository.findByVerificationCode(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired verification token"));
+
+        if (Boolean.TRUE.equals(emailVerification.getVerified())) {
+            return;
+        }
+
+        if (emailVerification.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Verification token has expired");
+        }
+
+        User user = emailVerification.getUser();
+        user.setEmailVerified(true);
+        userRepository.save(user);
+
+        emailVerification.setVerified(true);
+        emailVerificationRepository.save(emailVerification);
     }
 
     @Override
@@ -301,11 +379,74 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public UserResponse updateProfile(Long userId, UpdateProfileRequest request) {
-        return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        UserProfile profile = userProfileRepository.findByUserUserId(userId)
+                .orElseGet(() -> UserProfile.builder()
+                        .user(user)
+                        .build());
+
+        if (request.getFullName() != null) {
+            profile.setFullName(request.getFullName());
+            user.setUsername(request.getFullName());
+        }
+        if (request.getBirthday() != null) {
+            profile.setBirthday(request.getBirthday());
+        }
+        if (request.getCountry() != null) {
+            profile.setCountry(request.getCountry());
+        }
+        if (request.getNativeLanguage() != null) {
+            profile.setNativeLanguage(request.getNativeLanguage());
+        }
+        if (request.getBio() != null) {
+            profile.setBio(request.getBio());
+        }
+
+        userRepository.save(user);
+        userProfileRepository.save(profile);
+
+        return mapToUserResponse(user, profile);
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("Authenticated user is required");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof OAuth2User oauth2User) {
+            String email = oauth2User.getAttribute("email");
+            if (email == null || email.isBlank()) {
+                throw new IllegalArgumentException("OAuth2 account email not found");
+            }
+            return userRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        }
+
+        String username = principal instanceof UserDetails userDetails
+                ? userDetails.getUsername()
+                : authentication.getName();
+
+        if (username == null || username.isBlank()) {
+            throw new AuthenticationCredentialsNotFoundException("Authenticated user is required");
+        }
+
+        return userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
     private UserResponse mapToUserResponse(User user) {
+        UserProfile profile = userProfileRepository.findByUserUserId(user.getUserId()).orElse(null);
+        return mapToUserResponse(user, profile);
+    }
+
+    private UserResponse mapToUserResponse(User user, UserProfile profile) {
         UserResponse response = new UserResponse();
         response.setId(user.getUserId());
         response.setUsername(user.getUsername());
@@ -316,6 +457,12 @@ public class AuthServiceImpl implements AuthService {
         if (user.getRole() != null) {
             response.setRoleId(user.getRole().getRoleId());
             response.setRole(user.getRole().getRoleName());
+        }
+        if (profile != null) {
+            response.setBirthday(profile.getBirthday());
+            response.setCountry(profile.getCountry());
+            response.setNativeLanguage(profile.getNativeLanguage());
+            response.setBio(profile.getBio());
         }
         response.setLastLogin(user.getLastLogin());
         response.setCreatedAt(user.getCreatedAt());

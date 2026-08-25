@@ -39,16 +39,7 @@ export function useCurrentUser() {
       const refresh = useAuthStore.getState().refreshToken ?? undefined;
 
       if (token) {
-        // Merge: prefer server role, fallback to existing store role
-        const existingUser = useAuthStore.getState().user;
-        const mergedUser = {
-          ...existingUser,
-          ...user,
-          // Always prefer the server role if it exists; fallback to existing
-          role: user.role ?? existingUser?.role ?? null,
-          roleId: user.roleId ?? existingUser?.roleId ?? null,
-        };
-        setAuth(mergedUser as typeof user, token, refresh);
+        setAuth(user, token, refresh);
       }
 
       return user;

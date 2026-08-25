@@ -110,12 +110,23 @@ export function HomePage() {
           </ul>
 
           <div className="user-profile-menu">
-            <div className="user-badge">
+            <button
+              type="button"
+              className="user-badge"
+              onClick={() => navigate("/profile")}
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+              }}
+              title="Mở trang profile"
+            >
               <div className="user-avatar">{avatarInitial}</div>
               <div className="user-info">
                 <span className="user-name">{userName}</span>
               </div>
-            </div>
+            </button>
             <button
               type="button"
               className="logout-btn"

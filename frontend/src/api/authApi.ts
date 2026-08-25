@@ -5,6 +5,7 @@ import type {
   RefreshTokenRequest,
   RegisterRequest,
   ResetPasswordRequest,
+  UpdateProfileRequest,
   UserResponse,
   VerifyOtpRequest,
   VerifyRegistrationRequest,
@@ -74,9 +75,7 @@ export async function forgotPassword(
  * POST /api/auth/verify-otp
  * Verifies the OTP code sent to the user's email.
  */
-export async function verifyOtp(
-  payload: VerifyOtpRequest,
-): Promise<void> {
+export async function verifyOtp(payload: VerifyOtpRequest): Promise<void> {
   await apiClient.post("/auth/verify-otp", payload);
 }
 
@@ -104,5 +103,19 @@ export async function verifyEmail(token: string): Promise<void> {
  */
 export async function getCurrentUser(): Promise<UserResponse> {
   const { data } = await apiClient.get<UserResponse>("/users/me");
+  return data;
+}
+
+export async function updateProfile(
+  userId: number,
+  payload: UpdateProfileRequest,
+): Promise<UserResponse> {
+  const { data } = await apiClient.put<UserResponse>(
+    "/users/profile",
+    payload,
+    {
+      params: { userId },
+    },
+  );
   return data;
 }

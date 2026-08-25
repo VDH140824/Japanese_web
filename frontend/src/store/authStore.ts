@@ -25,6 +25,8 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
+      setUser: (user: UserResponse | null) => set({ user }),
+
       setTokens: (accessToken: string, refreshToken?: string) => {
         localStorage.setItem(TOKEN_KEY, accessToken);
         if (refreshToken) localStorage.setItem(REFRESH_KEY, refreshToken);
